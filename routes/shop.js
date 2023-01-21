@@ -8,7 +8,7 @@ const adminData = require('./admin')
 router.get('/', (req, res, next) => {
     const products = adminData.products
     // uses default templating engine, which we defined in server.js
-    res.render('shop', { products, title: 'Shop' })
+    res.render('shop', { products, title: 'Shop', path: '/' })
 })
 
 module.exports = router

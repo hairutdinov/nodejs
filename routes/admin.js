@@ -7,7 +7,7 @@ const products = []
 
 // GET /admin/add-post
 router.get('/add-product', (req, res) => {
-    res.render('add-product', { title: 'Add Product' })
+    res.render('add-product', { title: 'Add Product', path: '/admin/add-product' })
 })
 
 // POST /admin/add-post
