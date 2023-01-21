@@ -1,14 +1,8 @@
 const path = require('path')
-const rootDir = require('../helpers/path')
 const express = require('express')
 const router = express.Router()
+const productsController = require('../controllers/products')
 
-const adminData = require('./admin')
-
-router.get('/', (req, res, next) => {
-    const products = adminData.products
-    // uses default templating engine, which we defined in server.js
-    res.render('shop', { products, title: 'Shop', path: '/' })
-})
+router.get('/', productsController.actionGetProducts)
 
 module.exports = router

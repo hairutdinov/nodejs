@@ -4,25 +4,25 @@ const express = require('express')
 const rootDir = require('./helpers/path')
 const bodyParser = require('body-parser')
 
+const errorController = require('./controllers/error')
+
 const app = express()
 
 app.set('view engine', 'pug')
 // where to find pug template
 app.set('views', 'views')
 
-const adminData = require('./routes/admin')
+const adminRoute = require('./routes/admin')
 const shopRoute = require('./routes/shop')
 
 app.use(bodyParser.urlencoded({extended: false}))
 
 app.use(express.static(path.join(rootDir, 'public')))
 
-app.use('/admin', adminData.routes)
+app.use('/admin', adminRoute)
 app.use(shopRoute)
 
-app.use((req, res, next) => {
-    res.status(404).render('404-not-found', { title: '404 Page Not Found' })
-})
+app.use(errorController.actionNotFound)
 
 app.listen(8101)
 
