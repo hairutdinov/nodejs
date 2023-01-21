@@ -11,9 +11,9 @@ exports.actionPostAddProduct = (req, res) => {
     res.redirect('/')
 }
 
-exports.actionGetProducts = (req, res, next) => {
+exports.actionGetProducts = async (req, res, next) => {
     // uses default templating engine, which we defined in server.js
-    res.render('shop', { products: Product.fetchAll(), title: 'Shop', path: '/' })
+    res.render('shop', { products: await Product.fetchAll(), title: 'Shop', path: '/' })
 }
 
 // exports.products = products
