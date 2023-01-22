@@ -1,14 +1,38 @@
 const Product = require('../models/product')
 
-exports.getAddProduct = (req, res) => {
-    res.render('admin/add-product', { title: 'Add Product', path: '/admin/add-product' })
+exports.getEditProduct = async (req, res) => {
+    const id = req.params?.id ? req.params.id : ''
+    let product
+
+    if (id) {
+        product = await Product.findByProductId(id)
+    } else {
+        product = new Product()
+    }
+
+    res.render('admin/edit-product', { title: 'Add Product', path: '/admin/add-product', product })
 }
 
-exports.postAddProduct = (req, res) => {
-    const { title, imageUrl, description, price } = req.body
-    const product = new Product(title, imageUrl, description, price)
+exports.postEditProduct = async (req, res) => {
+    const id = req.body?.id ? req.body.id : ''
+
+    let product
+
+    if (id) {
+        product = await Product.findByProductId(id)
+    } else {
+        product = new Product()
+    }
+
+    product.load(req.body)
+
     product.save()
-    res.redirect('/')
+
+    if (id) {
+        res.redirect(`/admin/edit-product/${ id }`)
+    } else {
+        res.redirect(`/admin/add-product`)
+    }
 }
 
 exports.getProductList = async (req, res) => {

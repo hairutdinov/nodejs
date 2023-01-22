@@ -9,7 +9,11 @@ const getCart = () => {
     return new Promise(resolve => {
         fs.readFile(filePath, (err, fileContent) => {
             if (err) return resolve({ products: [], totalPrice: 0 })
-            resolve(JSON.parse(fileContent))
+            try {
+                resolve(JSON.parse(fileContent))
+            } catch (e) {
+                resolve({})
+            }
         })
     })
 }

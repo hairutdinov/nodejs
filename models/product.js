@@ -4,6 +4,12 @@ const rootDir = require('../helpers/path')
 
 const filePath = path.join(rootDir, 'data', 'products.json')
 
+const ATTRIBUTE_TITLE = 'title'
+const ATTRIBUTE_IMAGE_URL = 'imageUrl'
+const ATTRIBUTE_DESCRIPTION = 'description'
+const ATTRIBUTE_PRICE = 'price'
+
+
 const getProductsPromise = () => {
     return new Promise(resolve => {
         fs.readFile(filePath, (err, fileContent) => {
@@ -14,16 +20,25 @@ const getProductsPromise = () => {
 }
 
 module.exports = class Product {
-    constructor(title, imageUrl, description, price) {
-        this.title = title
-        this.imageUrl = imageUrl
-        this.description = description
-        this.price = price
+    constructor() {
+        this.id = ''
+        this.load({ title: '', imageUrl: '', description: '', price: '' })
     }
 
     save() {
         getProductsPromise().then(products => {
-            products.push(this)
+            if (this.id) {
+                let existingProductIndex = +this.id - 1
+                if (isNaN(existingProductIndex) || typeof existingProductIndex !== 'number') throw new Error(`Can't find product with id ${ +this.id }`)
+                let updatedProductList = [...products]
+                delete this.id
+                updatedProductList[existingProductIndex] = this
+                products = updatedProductList
+            } else {
+                delete this.id
+                products.push(this)
+            }
+
             fs.writeFile(filePath, JSON.stringify(products), err => {
                 console.error(err)
             })
@@ -35,18 +50,52 @@ module.exports = class Product {
     }
 
     static findByProductId(productId) {
-        const index = productId - 1
+        const index = +productId - 1
         return getProductsPromise()
             .then(products => {
                 try {
                     if (products[index] === undefined) {
-                        throw Error(`Can't find product with id ${ products }`)
+                        throw Error(`Can't find product with id ${ productId }`)
                     }
-                    return products[index]
+
+                    const product = new this
+                    product.id = productId
+                    product.load(products[index])
+
+                    return product
                 } catch (e) {
-                    alert(e.message)
+                    console.error(e.message)
                 }
             })
             .catch(err => console.error(err))
+    }
+
+    static getAttributes() {
+        return [ATTRIBUTE_TITLE, ATTRIBUTE_IMAGE_URL, ATTRIBUTE_DESCRIPTION, ATTRIBUTE_PRICE]
+    }
+
+    static getAttributeLabels() {
+        return {
+            ATTRIBUTE_TITLE: 'Title',
+            ATTRIBUTE_IMAGE_URL: 'Image URL',
+            ATTRIBUTE_DESCRIPTION: 'Description',
+            ATTRIBUTE_PRICE: 'Price'
+       }
+    }
+
+    static getAttributeLabel(attribute) {
+        return this.getAttributeLabels()[attribute]
+    }
+
+    load(data) {
+        data = JSON.parse(JSON.stringify(data))
+        this.constructor.getAttributes().forEach(field => {
+            if (
+                data[field] !== undefined &&
+                this.id && data[field] || !this.id
+            ) {
+                this[field] = data[field]
+            }
+        })
     }
 }

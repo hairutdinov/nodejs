@@ -1,0 +1,22 @@
+extends ../layouts/main-layout
+
+block styles
+    link(rel='stylesheet', href='/css/forms.css')
+    link(rel='stylesheet', href='/css/product.css')
+block content
+    main
+        form.product-form(action=`/admin/${ product.id ? `edit-product/${ product.id }` : 'add-product' }` method='POST')
+            input#id(type='hidden' name='id' value=`${ product.id }`)
+            .form-control
+                label(for='title') Title
+                input#title(type='text' name='title' value=`${ product.title }`)
+            .form-control
+                label(for='image_url') Image URL
+                input#image_url(type='text' name='imageUrl' value=`${ product.imageUrl }`)
+            .form-control
+                label(for='price') Price
+                input#price(type='number' name='price', step='0.01' value=`${ product.price }`)
+            .form-control
+                label(for='description') Description
+                textarea#description(name='description', rows='6') #{ product.description }
+            button.btn(type='submit') Add Product
