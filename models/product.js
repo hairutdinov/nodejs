@@ -36,6 +36,17 @@ module.exports = class Product {
 
     static findByProductId(productId) {
         const index = productId - 1
-        return getProductsPromise().then(products => products[index])
+        return getProductsPromise()
+            .then(products => {
+                try {
+                    if (products[index] === undefined) {
+                        throw Error(`Can't find product with id ${ products }`)
+                    }
+                    return products[index]
+                } catch (e) {
+                    alert(e.message)
+                }
+            })
+            .catch(err => console.error(err))
     }
 }

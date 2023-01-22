@@ -1,5 +1,6 @@
 const adminData = require("../routes/admin");
 const Product = require('../models/product')
+const Cart = require('../models/cart')
 
 exports.getIndex = async (req, res) => {
     res.render('shop/index', { products: await Product.fetchAll(), title: 'Shop', path: '/' })
@@ -21,7 +22,9 @@ exports.getCart = async (req, res, next) => {
 
 exports.postCart = async (req, res, next) => {
     const { productId } = req.body
-    console.log(productId)
+    const product = await Product.findByProductId(productId)
+    product.id = productId
+    await Cart.addProduct(product)
     res.redirect('/cart')
 }
 
