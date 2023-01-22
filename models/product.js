@@ -65,9 +65,9 @@ module.exports = class Product {
                     return product
                 } catch (e) {
                     console.error(e.message)
+                    throw e
                 }
             })
-            .catch(err => console.error(err))
     }
 
     static getAttributes() {
