@@ -1,0 +1,12 @@
+extends ../layouts/main-layout
+
+block content
+    main.centered
+        h1 #{ product.title }
+        hr
+        img(src=`${ product.imageUrl }`, style='max-width: 400px')
+        h2 #{ product.price }
+        p #{ product.description }
+        form(action=`/cart`, method='post')
+            input(type='hidden', name='productId', value=`${ productId }`)
+            button.btn Add to Cart

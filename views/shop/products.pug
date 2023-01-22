@@ -16,7 +16,9 @@ block content
                             h2.product__price $#{ product.price }
                             p.product__description #{ product.description }
                         .card__actions
-                            form(action=`/add-to-cart/${ index+1 }`, method='post')
+                            a.btn(href=`/products/${ index+1}`) Details
+                            form(action=`/cart/`, method='post')
+                                input(type='hidden', name='productId', value=`${ index+1 }`)
                                 button.btn Add to Cart
         else
             h1 No products

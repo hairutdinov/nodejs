@@ -33,4 +33,9 @@ module.exports = class Product {
     static fetchAll() {
         return getProductsPromise()
     }
+
+    static findByProductId(productId) {
+        const index = productId - 1
+        return getProductsPromise().then(products => products[index])
+    }
 }
