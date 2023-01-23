@@ -14,7 +14,12 @@ const getProductsPromise = () => {
     return new Promise(resolve => {
         fs.readFile(filePath, (err, fileContent) => {
             if (err) return resolve([])
-            resolve(JSON.parse(fileContent))
+            try {
+                resolve(JSON.parse(fileContent))
+            } catch (e) {
+                console.error(e)
+                resolve([])
+            }
         })
     })
 }
@@ -35,7 +40,7 @@ module.exports = class Product {
                 updatedProductList[existingProductIndex] = this
                 products = updatedProductList
             } else {
-                delete this.id
+                this.id = products.length + 1
                 products.push(this)
             }
 

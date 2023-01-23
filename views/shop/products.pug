@@ -6,7 +6,7 @@ block content
     main
         if products.length > 0
             .grid
-                each product, index in products
+                each product in products
                     article.card.product-item
                         header.card__header
                             h1.product__title #{product.title}
@@ -16,9 +16,9 @@ block content
                             h2.product__price $#{ product.price }
                             p.product__description #{ product.description }
                         .card__actions
-                            a.btn(href=`/products/${ index+1}`) Details
+                            a.btn(href=`/products/${ product.id }`) Details
                             form(action=`/cart/`, method='post')
-                                input(type='hidden', name='productId', value=`${ index+1 }`)
+                                input(type='hidden', name='productId', value=`${ product.id }`)
                                 button.btn Add to Cart
         else
             h1 No products

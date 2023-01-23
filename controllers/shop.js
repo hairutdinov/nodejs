@@ -13,7 +13,7 @@ exports.getProducts = async (req, res, next) => {
 exports.getProductDetail = async (req, res, next) => {
     const { productId } = req.params
     const product = await Product.findByProductId(productId)
-    res.render('shop/product-detail', { title: 'Product Detail', path: '/product-detail', product, productId })
+    res.render('shop/product-detail', { title: 'Product Detail', path: '/product-detail', product })
 }
 
 exports.getCart = async (req, res, next) => {
