@@ -2,50 +2,81 @@ const Product = require('../models/product')
 
 exports.getEditProduct = async (req, res) => {
     const id = req.params?.id ? req.params.id : ''
-    let product
-
     if (id) {
-        product = await Product.findByProductId(id).catch(err => console.error(err))
-        if (!product) return res.redirect(`/admin/product-list`)
+        product = await Product.findByPk(id)
+            .then(product => {
+                if (!product) return res.redirect('/admin/product-list')
+                res.render('admin/edit-product', { title: 'Add Product', path: '/admin/add-product', product, id })
+            })
+            .catch(err => console.error(err))
     } else {
-        product = new Product()
+        res.render('admin/edit-product', { title: 'Add Product', path: '/admin/add-product', id })
     }
-
-    res.render('admin/edit-product', { title: 'Add Product', path: '/admin/add-product', product })
 }
 
 exports.postEditProduct = async (req, res) => {
     try {
         const id = req.body?.id ? req.body.id : ''
-
-        let product
+        const { title, price, description, imageUrl } = req.body
 
         if (id) {
-            product = await Product.findByProductId(id)
+            Product.findByPk(id)
+                .then(product => {
+                    product.title = title
+                    product.price = price
+                    product.description = description
+                    product.imageUrl = imageUrl
+                    return product.save()
+                })
+                .then(() => {
+                    console.log(`Product with id ${ id } updated`)
+                    res.redirect(`/admin/product-list`)
+                })
+                .catch(e => {
+                    throw e
+                })
         } else {
-            product = new Product()
+            Product.create({
+                title,
+                price,
+                description,
+                imageUrl
+            })
+                .then(result => {
+                    console.log(result)
+                    res.redirect(`/admin/product-list`)
+                })
+                .catch(e => {
+                    throw e
+                })
         }
 
-        product.load(req.body)
-
-        product.save()
     } catch (e) {
         console.error(e)
+        res.redirect(`/admin/product-list`)
     }
-
-    res.redirect(`/admin/product-list`)
 }
 
 exports.getProductList = async (req, res) => {
-    res.render('admin/product-list', { products: await Product.fetchAll(), title: 'Admin Products', path: '/admin/product-list' })
+    Product.findAll()
+        .then(products => {
+            res.render('admin/product-list', { products, title: 'Admin Products', path: '/admin/product-list' })
+        })
+        .catch(console.error)
 }
 
 exports.postDeleteProduct = async (req, res) => {
     try {
         const id = req.body?.id ? req.body.id : ''
-        await Product.deleteByProductId(id)
+        await Product.destroy({ where: { id } })
+            .then(() => {
+                res.redirect(`/admin/product-list`)
+            })
+            .catch(e => {
+                throw e
+            })
     } catch (e) {
         console.error(e)
+        res.redirect(`/admin/product-list`)
     }
-    res.redirect(`/admin/product-list`)
 }

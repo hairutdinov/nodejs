@@ -5,7 +5,7 @@ const rootDir = require('./helpers/path')
 const bodyParser = require('body-parser')
 
 const errorController = require('./controllers/error')
-const db = require('./util/database')
+const sequelize = require('./util/database')
 
 const app = express()
 
@@ -25,4 +25,10 @@ app.use(shopRoute)
 
 app.use(errorController.actionNotFound)
 
-app.listen(8101)
+sequelize.sync()
+    .then(result => {
+        // console.log(result)
+        app.listen(8101)
+    })
+    .catch(console.error)
+
