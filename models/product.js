@@ -33,8 +33,10 @@ module.exports = class Product {
     save() {
         getProductsPromise().then(products => {
             if (this.id) {
-                let existingProductIndex = +this.id - 1
-                if (isNaN(existingProductIndex) || typeof existingProductIndex !== 'number') throw new Error(`Can't find product with id ${ +this.id }`)
+                const existingProductIndex = products.findIndex(p => p.id == this.id)
+                if (products[existingProductIndex] === undefined) {
+                    throw Error(`Can't find product with id ${ this.id }`)
+                }
                 let updatedProductList = [...products]
                 updatedProductList[existingProductIndex] = this
                 products = updatedProductList
@@ -54,9 +56,10 @@ module.exports = class Product {
     }
 
     static findByProductId(productId) {
-        const index = +productId - 1
         return getProductsPromise()
             .then(products => {
+                const index = products.findIndex(p => p.id == productId)
+
                 try {
                     if (products[index] === undefined) {
                         throw Error(`Can't find product with id ${ productId }`)
@@ -75,9 +78,10 @@ module.exports = class Product {
     }
 
     static deleteByProductId(productId) {
-        const index = +productId - 1
         return getProductsPromise()
             .then(products => {
+                const index = products.findIndex(p => p.id == productId)
+
                 try {
                     if (products[index] === undefined) {
                         throw Error(`Can't find product with id ${ productId }`)

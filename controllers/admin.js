@@ -6,7 +6,7 @@ exports.getEditProduct = async (req, res) => {
 
     if (id) {
         product = await Product.findByProductId(id).catch(err => console.error(err))
-        if (!product) return res.redirect(`/products`)
+        if (!product) return res.redirect(`/admin/product-list`)
     } else {
         product = new Product()
     }
