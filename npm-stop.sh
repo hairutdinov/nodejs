@@ -1,2 +1,2 @@
 #!/bin/bash
-docker stop nodeapline
+docker stop nodealpine
