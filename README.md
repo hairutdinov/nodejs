@@ -1,3 +1,8 @@
+## Create .env file and fill empty variables
+```shell
+cp .env.example .env 
+```
+
 ## Build a project
 ```shell
 docker compose build node 
