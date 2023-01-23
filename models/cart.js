@@ -36,10 +36,37 @@ module.exports = class Cart {
                 cart.products = [...cart.products, { id: product.id, quantity: 1}]
             }
 
-            cart.totalPrice = cart.totalPrice + +product.price
+            cart.totalPrice = parseFloat(cart.totalPrice + +product.price).toFixed(2)
 
             fs.writeFile(filePath, JSON.stringify(cart), err => {
                 console.error(err)
+            })
+        })
+    }
+
+    static async deleteProduct(product) {
+        return getCart().then(async cart => {
+            if (!cart?.products) cart.products = []
+            if (!cart?.totalPrice) cart.totalPrice = 0
+
+            const existingProductIndex = cart.products.findIndex(p => p.id == product.id)
+
+            if (existingProductIndex === -1) {
+                return true
+            }
+
+            const existingCartProduct = cart.products[existingProductIndex]
+            const deletingProductTotalPrice = product.price * existingCartProduct.quantity
+
+            cart.totalPrice = cart.totalPrice - deletingProductTotalPrice
+            cart.products.splice(existingProductIndex, 1)
+
+            fs.writeFile(filePath, JSON.stringify(cart), err => {
+                if (err) {
+                    throw new Error(`Errors while deleting product with id ${ product.id } from cart: `, err)
+                }
+
+                return true
             })
         })
     }
