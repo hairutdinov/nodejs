@@ -12,3 +12,5 @@ RUN npm install
 COPY . .
 
 EXPOSE 8101
+
+CMD ['/bin/sh']

@@ -1,11 +1,11 @@
 ## Build a project
 ```shell
-docker build . -t bulat/alpine-node-npm 
+docker compose build node 
 ```
 
 ## Interactive mode
 ```shell
-docker run --rm -it -p 8101:8101 --name nodealpine -v $(pwd):/usr/src/app bulat/alpine-node-npm sh
+docker compose exec -it node sh
 ```
 
 ## npm start
@@ -20,5 +20,5 @@ docker run --rm -it -p 8101:8101 --name nodealpine -v $(pwd):/usr/src/app bulat/
 
 ## npm start with hot reload 
 ```shell
-docker run --rm -p 8101:8101 -v $(pwd):/usr/src/app bulat/alpine-node-npm npm run dev
+docker compose exec node npm run dev
 ```

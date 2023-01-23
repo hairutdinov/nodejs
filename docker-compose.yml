@@ -1,0 +1,26 @@
+services:
+  node:
+    build:
+      context: .
+    ports:
+      - "$NODE_SERVER_EXTERNAL_PORT:$NODE_SERVER_INTERNAL_PORT"
+    depends_on:
+      - db
+    links:
+      - "db:database"
+    tty: true
+    command: /bin/sh
+    volumes:
+      - ./:/usr/src/app
+  db:
+    image: mysql:debian
+#    restart: always
+    environment:
+      MYSQL_DATABASE: "$MYSQL_DATABASE"
+      MYSQL_USER: "$MYSQL_USER"
+      MYSQL_PASSWORD: "$MYSQL_PASSWORD"
+      MYSQL_ROOT_PASSWORD: "$MYSQL_ROOT_PASSWORD"
+    ports:
+      - "$MYSQL_EXTERNAL_PORT:$MYSQL_INTERNAL_PORT"
+    volumes:
+      - ./dbdata:/var/lib/mysql
