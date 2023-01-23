@@ -2,8 +2,6 @@ const fs = require('fs')
 const path = require('path')
 const rootDir = require('../helpers/path')
 
-const Cart = require('./cart')
-
 const filePath = path.join(rootDir, 'data', 'products.json')
 
 const ATTRIBUTE_TITLE = 'title'
@@ -48,7 +46,9 @@ module.exports = class Product {
             }
 
             fs.writeFile(filePath, JSON.stringify(products), err => {
-                console.error(err)
+                if (err) {
+                    throw new Error(`Error while saving product with id ${ this.id }: `, err)
+                }
             })
         })
     }
@@ -80,6 +80,8 @@ module.exports = class Product {
     }
 
     static deleteByProductId(productId) {
+        const Cart = require('./cart')
+
         return getProductsPromise()
             .then(async products => {
                 const index = products.findIndex(p => p.id == productId)
@@ -95,7 +97,7 @@ module.exports = class Product {
 
                     fs.writeFile(filePath, JSON.stringify(products), async err => {
                         if (err) {
-                            throw new Error(`Errors while deleting product with id ${ productId }: `, err)
+                            throw new Error(`Error while deleting product with id ${ productId }: `, err)
                         }
                         await Cart.deleteProduct(product)
                     })

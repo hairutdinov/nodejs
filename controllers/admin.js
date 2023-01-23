@@ -15,19 +15,23 @@ exports.getEditProduct = async (req, res) => {
 }
 
 exports.postEditProduct = async (req, res) => {
-    const id = req.body?.id ? req.body.id : ''
+    try {
+        const id = req.body?.id ? req.body.id : ''
 
-    let product
+        let product
 
-    if (id) {
-        product = await Product.findByProductId(id)
-    } else {
-        product = new Product()
+        if (id) {
+            product = await Product.findByProductId(id)
+        } else {
+            product = new Product()
+        }
+
+        product.load(req.body)
+
+        product.save()
+    } catch (e) {
+        console.error(e)
     }
-
-    product.load(req.body)
-
-    product.save()
 
     res.redirect(`/admin/product-list`)
 }
@@ -35,8 +39,6 @@ exports.postEditProduct = async (req, res) => {
 exports.getProductList = async (req, res) => {
     res.render('admin/product-list', { products: await Product.fetchAll(), title: 'Admin Products', path: '/admin/product-list' })
 }
-
-
 
 exports.postDeleteProduct = async (req, res) => {
     try {

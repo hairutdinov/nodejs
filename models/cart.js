@@ -1,18 +1,18 @@
 const fs = require('fs')
 const path = require('path')
 const rootDir = require('../helpers/path')
-const Product = require('./product')
 
 const filePath = path.join(rootDir, 'data', 'cart.json')
 
 const getCart = () => {
     return new Promise(resolve => {
+        const initObject = { products: [], totalPrice: 0 }
         fs.readFile(filePath, (err, fileContent) => {
-            if (err) return resolve({ products: [], totalPrice: 0 })
+            if (err) return resolve(initObject)
             try {
                 resolve(JSON.parse(fileContent))
             } catch (e) {
-                resolve({})
+                resolve(initObject)
             }
         })
     })
@@ -22,8 +22,6 @@ module.exports = class Cart {
 
     static async addProduct(product) {
         return getCart().then(async cart => {
-            if (!cart?.products) cart.products = []
-            if (!cart?.totalPrice) cart.totalPrice = 0
 
             const existingProductIndex = cart.products.findIndex(p => p.id === product.id)
 
@@ -36,18 +34,18 @@ module.exports = class Cart {
                 cart.products = [...cart.products, { id: product.id, quantity: 1}]
             }
 
-            cart.totalPrice = parseFloat(cart.totalPrice + +product.price).toFixed(2)
+            cart.totalPrice = +parseFloat(cart.totalPrice + +product.price).toFixed(2)
 
             fs.writeFile(filePath, JSON.stringify(cart), err => {
-                console.error(err)
+                if (err) {
+                    throw new Error(`Errors while adding product with id ${ product.id } to cart: `, err)
+                }
             })
         })
     }
 
     static async deleteProduct(product) {
         return getCart().then(async cart => {
-            if (!cart?.products) cart.products = []
-            if (!cart?.totalPrice) cart.totalPrice = 0
 
             const existingProductIndex = cart.products.findIndex(p => p.id == product.id)
 
