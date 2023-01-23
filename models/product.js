@@ -36,7 +36,6 @@ module.exports = class Product {
                 let existingProductIndex = +this.id - 1
                 if (isNaN(existingProductIndex) || typeof existingProductIndex !== 'number') throw new Error(`Can't find product with id ${ +this.id }`)
                 let updatedProductList = [...products]
-                delete this.id
                 updatedProductList[existingProductIndex] = this
                 products = updatedProductList
             } else {
@@ -68,6 +67,28 @@ module.exports = class Product {
                     product.load(products[index])
 
                     return product
+                } catch (e) {
+                    console.error(e.message)
+                    throw e
+                }
+            })
+    }
+
+    static deleteByProductId(productId) {
+        const index = +productId - 1
+        return getProductsPromise()
+            .then(products => {
+                try {
+                    if (products[index] === undefined) {
+                        throw Error(`Can't find product with id ${ productId }`)
+                    }
+
+                    products.splice(index, 1)
+
+                    fs.writeFile(filePath, JSON.stringify(products), err => {
+                        console.error(err)
+                        return true
+                    })
                 } catch (e) {
                     console.error(e.message)
                     throw e

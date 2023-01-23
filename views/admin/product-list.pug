@@ -6,7 +6,7 @@ block content
     main
         if products.length > 0
             .grid
-                each product, index in products
+                each product in products
                     article.card.product-item
                         header.card__header
                             h1.product__title #{product.title}
@@ -16,8 +16,9 @@ block content
                             h2.product__price $#{ product.price }
                             p.product__description #{ product.description }
                         .card__actions
-                            a.btn(href=`/admin/edit-product/${ index+1 }`) Edit
-                            form(action=`/admin/delete-product/${ index+1 }`, method='post')
+                            a.btn(href=`/admin/edit-product/${ product.id }`) Edit
+                            form(action=`/admin/delete-product`, method='post')
+                                input(type='hidden', name='id', value=`${ product.id }`)
                                 button.btn Delete
         else
             h1 No products

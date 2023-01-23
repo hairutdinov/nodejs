@@ -29,13 +29,21 @@ exports.postEditProduct = async (req, res) => {
 
     product.save()
 
-    if (id) {
-        res.redirect(`/admin/edit-product/${ id }`)
-    } else {
-        res.redirect(`/admin/add-product`)
-    }
+    res.redirect(`/admin/product-list`)
 }
 
 exports.getProductList = async (req, res) => {
     res.render('admin/product-list', { products: await Product.fetchAll(), title: 'Admin Products', path: '/admin/product-list' })
+}
+
+
+
+exports.postDeleteProduct = async (req, res) => {
+    try {
+        const id = req.body?.id ? req.body.id : ''
+        await Product.deleteByProductId(id)
+    } catch (e) {
+        console.error(e)
+    }
+    res.redirect(`/admin/product-list`)
 }
