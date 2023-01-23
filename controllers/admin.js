@@ -36,11 +36,11 @@ exports.postEditProduct = async (req, res) => {
                     throw e
                 })
         } else {
-            Product.create({
+            req.user.createProduct({
                 title,
                 price,
                 description,
-                imageUrl
+                imageUrl,
             })
                 .then(result => {
                     console.log(result)
