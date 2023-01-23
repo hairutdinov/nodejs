@@ -1,1 +1,14 @@
 extends ../layouts/main-layout
+
+block content
+    main
+        if cart.products.length > 0
+            ul
+                each cartProduct in cart.products
+                    li
+                        p #{ cartProduct.product.title } (#{ cartProduct.quantity })
+                        form(action='/cart/delete' method='post')
+                            input#id(type='hidden' name='id' value=`${ cartProduct.id }`)
+                            button.btn Delete
+        else
+            h1 No Products in Cart

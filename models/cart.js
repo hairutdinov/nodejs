@@ -68,4 +68,19 @@ module.exports = class Cart {
             })
         })
     }
+
+    static async getCartWithProducts() {
+        const Product = require('./product')
+        const products = await Product.fetchAll()
+
+        return getCart().then(async cart => {
+
+            cart.products = cart.products.map(cp => {
+                cp.product = products.find(p => p.id == cp.id)
+                return cp
+            })
+
+            return cart
+        })
+    }
 }

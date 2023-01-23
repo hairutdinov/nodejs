@@ -17,7 +17,7 @@ exports.getProductDetail = async (req, res, next) => {
 }
 
 exports.getCart = async (req, res, next) => {
-    res.render('shop/cart', { title: 'Cart', path: '/cart' })
+    res.render('shop/cart', { title: 'Cart', path: '/cart', cart: await Cart.getCartWithProducts() })
 }
 
 exports.postCart = async (req, res, next) => {
@@ -34,4 +34,11 @@ exports.getOrders = async (req, res, next) => {
 
 exports.getCheckout = async (req, res, next) => {
     res.render('shop/checkout', { title: 'Checkout', path: '/checkout' })
+}
+
+exports.postCartDelete = async (req, res) => {
+    const { id } = req.body
+    const product = await Product.findByProductId(id)
+    await Cart.deleteProduct(product)
+    res.redirect('/cart')
 }
