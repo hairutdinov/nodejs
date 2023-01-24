@@ -1,3 +1,6 @@
+## editing /etc/hosts
+```127.0.0.1 database```
+
 ## Create .env file and fill empty variables
 ```shell
 cp .env.example .env 
