@@ -57,7 +57,7 @@ Product.belongsToMany(Cart, { through: CartItem })
 
 sequelize.sync({
     // TODO delete on prod
-    force: true
+    // force: true
 })
     .then(result => {
         // console.log(result)

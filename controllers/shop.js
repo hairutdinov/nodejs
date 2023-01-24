@@ -45,11 +45,34 @@ exports.getCart = async (req, res, next) => {
 }
 
 exports.postCart = async (req, res, next) => {
-    const { productId } = req.body
-    const product = await Product.findByProductId(productId)
-    product.id = productId
-    await Cart.addProduct(product)
-    res.redirect('/cart')
+    const { id } = req.body
+    let cart,
+        quantity = 1
+    req.user.getCart()
+        .then(c => {
+            if (!c) return []
+            cart = c
+            return c.getProducts({ where: { id } })
+        })
+        .then(products => {
+            let product
+            if (products.length > 0) {
+                product = products[0]
+                quantity = product.cartItem.quantity + 1
+                return product
+            }
+
+            return Product.findByPk(id)
+                .then(product => product)
+                .catch(console.error)
+        })
+        .then(product => {
+            return cart.addProduct(product, { through: { quantity } })
+        })
+        .then(() => {
+            res.redirect('/cart')
+        })
+        .catch(console.error)
 }
 
 exports.getOrders = async (req, res, next) => {
