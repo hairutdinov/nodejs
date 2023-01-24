@@ -1,5 +1,4 @@
 const Product = require('../models/product')
-const { ObjectId } = require('mongodb')
 
 exports.getEditProduct = async (req, res) => {
     const id = req.params?.id ? req.params.id : ''

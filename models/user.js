@@ -49,5 +49,18 @@ class User {
             )
 
     }
+
+    getCart() {
+        const db = getDb()
+        return db
+            .collection('products')
+            .find({ _id: {$in: this.cart.items.map(c => c.productId)} })
+            .toArray()
+            .then(products => products.map(p => ({
+                    ...p,
+                    quantity: this.cart.items.find(c => c.productId.toString() === p._id.toString()).quantity
+                }))
+            )
+    }
 }
 module.exports = User
