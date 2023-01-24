@@ -100,9 +100,11 @@ exports.postCartDelete = async (req, res) => {
 }
 
 exports.postCreateOrder = async (req, res) => {
+    let cart
     req.user.getCart()
-        .then(cart => {
-            return cart.getProducts()
+        .then(c => {
+            cart = c
+            return c.getProducts()
         })
         .then(products => {
             return req.user.createOrder()
@@ -113,6 +115,9 @@ exports.postCreateOrder = async (req, res) => {
                     }))
                 })
                 .catch(console.error)
+        })
+        .then(() => {
+            return cart.setProducts(null)
         })
         .then(() => {
             res.redirect('/orders')
