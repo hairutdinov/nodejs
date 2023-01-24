@@ -1,17 +1,27 @@
-const mongodb = require('mongodb')
+const { ObjectId } = require('mongodb')
 const { getDb } = require('../util/database')
 
 class Product {
-    constructor(title, price, description, imageUrl) {
+    constructor(title, price, description, imageUrl, id = null) {
         this.title = title
         this.price = price
         this.description = description
         this.imageUrl = imageUrl
+        this._id = id ? new ObjectId(id) : null
     }
 
     save() {
         const db = getDb()
-        return db.collection('products').insertOne(this)
+        let dbOpt
+        if (this._id) {
+            dbOpt = db.collection('products').updateOne({ _id: this._id }, {
+                $set: this
+            })
+        } else {
+            dbOpt = db.collection('products').insertOne(this)
+        }
+
+        return dbOpt
             .then(r => {
                 console.log(r)
                 return Promise.resolve(r)
@@ -34,9 +44,17 @@ class Product {
     static findById(id) {
         const db = getDb()
         return db.collection('products')
-            .find({ _id: new mongodb.ObjectId(id) })
+            .find({ _id: new ObjectId(id) })
             .next() // because mongo will return cursor
             .then(product => product)
+            .catch(console.error)
+    }
+
+    static deleteById(id) {
+        const db = getDb()
+        return db.collection('products')
+            .deleteOne({ _id: new ObjectId(id) })
+            .then(r => r)
             .catch(console.error)
     }
 }
