@@ -7,6 +7,8 @@ const bodyParser = require('body-parser')
 const errorController = require('./controllers/error')
 const { mongoConnect } = require('./util/database')
 
+const User = require('./models/user')
+
 const app = express()
 
 app.set('view engine', 'pug')
@@ -20,15 +22,14 @@ app.use(bodyParser.urlencoded({extended: false}))
 
 app.use(express.static(path.join(rootDir, 'public')))
 
-// app.use((req, res, next) => {
-//     User.findByPk(1)
-//         .then(user => {
-//             // sequelize object
-//             req.user = user
-//             next()
-//         })
-//         .catch(console.error)
-// })
+app.use((req, res, next) => {
+    User.findById('63cff5f6d6adf1fa78835f79')
+        .then(user => {
+            req.user = user
+            next()
+        })
+        .catch(console.error)
+})
 
 app.use('/admin', adminRoute)
 app.use(shopRoute)
