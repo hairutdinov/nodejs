@@ -28,50 +28,31 @@ exports.getProductDetail = async (req, res, next) => {
 }
 
 exports.getCart = async (req, res, next) => {
-    req.user.getCart()
-        .then(cart => {
-            if (!cart) {
-                return res.render('shop/cart', { title: 'Cart', path: '/cart', products: [] })
-            }
-            return cart.getProducts()
-                .then(products => {
-                    console.log(products)
-                    res.render('shop/cart', { title: 'Cart', path: '/cart', products })
-                })
-                .catch(console.error)
-        })
-        .catch(console.error)
+    // req.user.getCart()
+    //     .then(cart => {
+    //         if (!cart) {
+    //             return res.render('shop/cart', { title: 'Cart', path: '/cart', products: [] })
+    //         }
+    //         return cart.getProducts()
+    //             .then(products => {
+    //                 console.log(products)
+    //                 res.render('shop/cart', { title: 'Cart', path: '/cart', products })
+    //             })
+    //             .catch(console.error)
+    //     })
+    //     .catch(console.error)
 }
 
 exports.postCart = async (req, res, next) => {
     const { id } = req.body
-    let cart,
-        quantity = 1
-    req.user.getCart()
-        .then(c => {
-            if (!c) return []
-            cart = c
-            return c.getProducts({ where: { id } })
-        })
-        .then(products => {
-            let product
-            if (products.length > 0) {
-                product = products[0]
-                quantity = product.cartItem.quantity + 1
-                return product
-            }
-
-            return Product.findByPk(id)
-                .then(product => product)
-                .catch(console.error)
-        })
+    Product.findById(id)
         .then(product => {
-            return cart.addProduct(product, { through: { quantity } })
+            return req.user.addToCart(product)
         })
-        .then(() => {
+        .then(result => {
+            console.log(result)
             res.redirect('/cart')
         })
-        .catch(console.error)
 }
 
 exports.getOrders = async (req, res, next) => {

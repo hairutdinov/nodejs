@@ -19,7 +19,7 @@ exports.postEditProduct = async (req, res) => {
     try {
         const id = req.body?.id ? req.body.id : ''
         const { title, price, description, imageUrl } = req.body
-        const product = new Product(title, price, description, imageUrl, id)
+        const product = new Product(title, price, description, imageUrl, id, req.user._id)
 
         product.save()
             .then(r => {
