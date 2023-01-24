@@ -20,6 +20,15 @@ class Product {
                 throw e
             })
     }
+
+    static fetchAll() {
+        const db = getDb()
+        return db.collection('products')
+            .find()
+            .toArray() // use it when u know there is a couple of thousands or maybe hundreds records
+            .then(products => products)
+            .catch(console.error)
+    }
 }
 
 module.exports = Product

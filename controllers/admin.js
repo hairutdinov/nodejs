@@ -50,13 +50,13 @@ exports.postEditProduct = async (req, res) => {
     }
 }
 
-// exports.getProductList = async (req, res) => {
-//     Product.findAll()
-//         .then(products => {
-//             res.render('admin/product-list', { products, title: 'Admin Products', path: '/admin/product-list' })
-//         })
-//         .catch(console.error)
-// }
+exports.getProductList = async (req, res) => {
+    Product.fetchAll()
+        .then(products => {
+            res.render('admin/product-list', { products, title: 'Admin Products', path: '/admin/product-list' })
+        })
+        .catch(console.error)
+}
 //
 // exports.postDeleteProduct = async (req, res) => {
 //     try {
