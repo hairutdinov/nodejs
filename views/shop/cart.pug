@@ -10,5 +10,7 @@ block content
                         form(action='/cart/delete' method='post')
                             input#id(type='hidden' name='id' value=`${ product.id }`)
                             button.btn Delete
+            form(action='/order/create' method='post')
+                button  Order now
         else
             h1 No Products in Cart

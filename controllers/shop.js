@@ -1,6 +1,5 @@
 const adminData = require("../routes/admin");
 const Product = require('../models/product')
-const Cart = require('../models/cart')
 
 exports.getIndex = async (req, res) => {
     Product.findAll()
@@ -98,4 +97,25 @@ exports.postCartDelete = async (req, res) => {
         })
         .catch(console.error)
     res.redirect('/cart')
+}
+
+exports.postCreateOrder = async (req, res) => {
+    req.user.getCart()
+        .then(cart => {
+            return cart.getProducts()
+        })
+        .then(products => {
+            return req.user.createOrder()
+                .then(order => {
+                    return order.addProducts(products.map(p => {
+                        p.orderItem = { quantity: p.cartItem.quantity }
+                        return p
+                    }))
+                })
+                .catch(console.error)
+        })
+        .then(() => {
+            res.redirect('/orders')
+        })
+        .catch(console.error)
 }

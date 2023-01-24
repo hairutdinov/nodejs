@@ -18,4 +18,6 @@ router.get('/products/:id', shopController.getProductDetail)
 
 router.post('/cart/delete', shopController.postCartDelete)
 
+router.post('/order/create', shopController.postCreateOrder)
+
 module.exports = router
