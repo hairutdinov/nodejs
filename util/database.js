@@ -1,9 +1,33 @@
 require('dotenv').config();
-const Sequelize = require('sequelize')
+const mongodb = require('mongodb')
+const { MongoClient, ServerApiVersion } = mongodb
 
-const sequelize = new Sequelize(process.env.MYSQL_DATABASE, process.env.MYSQL_USER, process.env.MYSQL_PASSWORD, {
-    dialect: 'mysql',
-    host: 'database'
-})
+let _db
 
-module.exports = sequelize
+const client = new MongoClient(process.env.MONGO_CONNECTION_URI)
+
+const mongoConnect = async () => {
+    // Use connect method to connect to the server
+    return client.connect()
+        .then(() => {
+            _db = client.db()
+            return client
+        })
+        .catch(e => {
+            throw e
+        })
+
+    // const db = client.db(dbName);
+    // const collection = db.collection('documents');
+
+    // the following code examples can be pasted here...
+    // return Promise.resolve(client)
+}
+
+const getDb = () => {
+    if (!_db) throw 'No database found!'
+     return _db
+}
+
+exports.mongoConnect = mongoConnect
+exports.getDb = getDb
