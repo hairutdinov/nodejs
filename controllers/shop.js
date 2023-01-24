@@ -29,7 +29,19 @@ exports.getProductDetail = async (req, res, next) => {
 }
 
 exports.getCart = async (req, res, next) => {
-    res.render('shop/cart', { title: 'Cart', path: '/cart', cart: await Cart.getCartWithProducts() })
+    req.user.getCart()
+        .then(cart => {
+            if (!cart) {
+                return res.render('shop/cart', { title: 'Cart', path: '/cart', products: [] })
+            }
+            return cart.getProducts()
+                .then(products => {
+                    console.log(products)
+                    res.render('shop/cart', { title: 'Cart', path: '/cart', products })
+                })
+                .catch(console.error)
+        })
+        .catch(console.error)
 }
 
 exports.postCart = async (req, res, next) => {

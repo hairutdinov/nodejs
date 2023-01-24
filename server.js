@@ -9,6 +9,8 @@ const sequelize = require('./util/database')
 
 const Product = require('./models/product')
 const User = require('./models/user')
+const Cart = require('./models/cart')
+const CartItem = require('./models/cart-item')
 
 const app = express()
 
@@ -42,9 +44,21 @@ app.use(errorController.actionNotFound)
 Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' })
 User.hasMany(Product)
 
+User.hasOne(Cart, {
+    foreignKey: {
+        unique: true
+    }
+})
+Cart.belongsTo(User)
 
-// TODO delete force: true on prod
-sequelize.sync({ force: true })
+Cart.belongsToMany(Product, { through: CartItem })
+Product.belongsToMany(Cart, { through: CartItem })
+
+
+sequelize.sync({
+    // TODO delete on prod
+    force: true
+})
     .then(result => {
         // console.log(result)
         return User.findByPk(1)
@@ -54,6 +68,11 @@ sequelize.sync({ force: true })
             return User.create({ name: 'Bulat', 'email': 'bulat@test.com' })
         }
         return Promise.resolve(user)
+    })
+    .then((user) => {
+        // console.log(user)
+        return user
+        return user.createCart()
     })
     .then((user) => {
         // console.log(user)
