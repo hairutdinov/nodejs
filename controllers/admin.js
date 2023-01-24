@@ -3,12 +3,13 @@ const Product = require('../models/product')
 exports.getEditProduct = async (req, res) => {
     const id = req.params?.id ? req.params.id : ''
     if (id) {
-        // product = await Product.findByPk(id)
-        //     .then(product => {
-        //         if (!product) return res.redirect('/admin/product-list')
-        //         res.render('admin/edit-product', { title: 'Add Product', path: '/admin/add-product', product, id })
-        //     })
-        //     .catch(err => console.error(err))
+        Product.findById(id)
+            .then(product => {
+                console.log(product)
+                if (!product) return res.redirect('/admin/product-list')
+                res.render('admin/edit-product', { title: 'Add Product', path: '/admin/add-product', product, id })
+            })
+            .catch(err => console.error(err))
     } else {
         res.render('admin/edit-product', { title: 'Add Product', path: '/admin/add-product', id })
     }

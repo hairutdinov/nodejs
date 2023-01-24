@@ -20,7 +20,7 @@ exports.getProducts = async (req, res, next) => {
 
 exports.getProductDetail = async (req, res, next) => {
     const { id } = req.params
-    Product.findByPk(id)
+    Product.findById(id)
         .then(product => {
             res.render('shop/product-detail', { title: `Product Detail | ${ product.title }`, path: '/product-detail', product })
         })
