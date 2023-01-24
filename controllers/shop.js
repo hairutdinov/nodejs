@@ -75,7 +75,19 @@ exports.postCart = async (req, res, next) => {
 }
 
 exports.getOrders = async (req, res, next) => {
-    res.render('shop/orders', { title: 'Orders', path: '/orders' })
+    /**
+     *  why products?
+     * because in server.js:61 we defined:
+     * * Order.belongsToMany(Product, { through: OrderItem })
+     * and if we look up at out product model (models/product.js), it has a name: product
+     * and sequelize pluralizes this
+     * ! eager loading concept
+    * */
+    req.user.getOrders({ include: ['products']})
+        .then(orders => {
+            res.render('shop/orders', { title: 'Orders', path: '/orders', orders })
+        })
+        .catch(console.error)
 }
 
 exports.getCheckout = async (req, res, next) => {

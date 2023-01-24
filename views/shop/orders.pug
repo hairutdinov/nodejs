@@ -1,1 +1,14 @@
 extends ../layouts/main-layout
+
+block content
+    main
+        if orders && orders.length > 0
+            ul
+                each order in orders
+                    li
+                        h1 #{ order.id }
+                        ul
+                            each product in order.products
+                                li #{ product.title } (#{ product.orderItem.quantity })
+        else
+            h1 Nothing there!
