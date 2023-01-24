@@ -68,7 +68,7 @@ exports.getProductList = async (req, res) => {
 exports.postDeleteProduct = async (req, res) => {
     try {
         const id = req.body?.id ? req.body.id : ''
-        await Product.destroy({ where: { id } })
+        Product.destroy({ where: { id } })
             .then(() => {
                 res.redirect(`/admin/product-list`)
             })
