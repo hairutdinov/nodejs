@@ -33,7 +33,7 @@ exports.postEditProduct = async (req, res) => {
                 })
                 .catch(console.error)
         } else {
-            const product = new Product({ title, price, description, imageUrl })
+            const product = new Product({ title, price, description, imageUrl, userId: req.user })
             product.save()
                 .then(r => {
                     res.redirect(`/admin/product-list`)
