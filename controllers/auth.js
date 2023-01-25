@@ -1,3 +1,5 @@
+const User = require('../models/user')
+
 exports.getLogin = (req, res, next) => {
     res.render('auth/login', {
         path: '/auth/login',
@@ -7,8 +9,13 @@ exports.getLogin = (req, res, next) => {
 }
 
 exports.postLogin = (req, res, next) => {
-    req.session.isLoggedIn = true
-    res.redirect('/')
+    User.findById(process.env.MONGO_USER_ID)
+        .then(user => {
+            req.session.isLoggedIn = true
+            req.session.user = user
+            res.redirect('/')
+        })
+        .catch(console.error)
 }
 
 exports.postLogout = (req, res, next) => {
