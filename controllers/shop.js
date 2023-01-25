@@ -29,7 +29,7 @@ exports.getProductDetail = async (req, res, next) => {
 }
 
 exports.getCart = async (req, res, next) => {
-    req.session.user
+    req.user
         .populate('cart.items.productId')
         // .execPopulate()
         .then(user => {
@@ -42,7 +42,7 @@ exports.postCart = async (req, res, next) => {
     const { id } = req.body
     Product.findById(id)
         .then(product => {
-            return req.session.user.addToCart(product)
+            return req.user.addToCart(product)
         })
         .then(result => {
             res.redirect('/cart')
@@ -50,7 +50,7 @@ exports.postCart = async (req, res, next) => {
 }
 
 exports.getOrders = async (req, res, next) => {
-    Order.find({ 'user.id': req.session.user._id })
+    Order.find({ 'user.id': req.user._id })
         .then(orders => {
             res.render('shop/orders', { title: 'Orders', path: '/orders', orders, isAuthenticated: req.session.isLoggedIn })
         })
@@ -63,7 +63,7 @@ exports.getCheckout = async (req, res, next) => {
 
 exports.postCartDelete = async (req, res) => {
     const { id } = req.body
-    req.session.user.removeFromCart(id)
+    req.user.removeFromCart(id)
         .then(() => {
             res.redirect('/cart')
         })
@@ -75,7 +75,7 @@ exports.postCartDelete = async (req, res) => {
 
 exports.postCreateOrder = async (req, res) => {
     const { id } = req.body
-    const products = req.session.user
+    const products = req.user
         .populate('cart.items.productId')
         // .execPopulate()
         .then(user => {
@@ -88,8 +88,8 @@ exports.postCreateOrder = async (req, res) => {
 
             const order = new Order({
                 user: {
-                    name: req.session.user.name,
-                    id: req.session.user._id
+                    name: req.user.name,
+                    id: req.user._id
                 },
                 products
             })
@@ -97,7 +97,7 @@ exports.postCreateOrder = async (req, res) => {
             return order.save()
         })
         .then(() => {
-            return req.session.user.clearCart()
+            return req.user.clearCart()
         })
         .then(() => {
             res.redirect('/orders')
