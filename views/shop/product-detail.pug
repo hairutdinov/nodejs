@@ -7,6 +7,7 @@ block content
         img(src=`${ product.imageUrl }`, style='max-width: 400px')
         h2 #{ product.price }
         p #{ product.description }
-        form(action=`/cart`, method='post')
-            input(type='hidden', name='productId', value=`${ product.id }`)
-            button.btn Add to Cart
+        if isAuthenticated
+            form(action=`/cart`, method='post')
+                input(type='hidden', name='productId', value=`${ product.id }`)
+                button.btn Add to Cart
