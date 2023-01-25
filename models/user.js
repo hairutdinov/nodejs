@@ -72,5 +72,33 @@ class User {
                 {$set: {cart: { items: updatedCartItems }}}
             )
     }
+
+    addOrder() {
+        const db = getDb()
+        return this.getCart()
+            .then(p => {
+                const cart = {items: p, user: {_id: new ObjectId(this._id), username: this.username}}
+                return db
+                    .collection('order')
+                    .insertOne(cart)
+            })
+            .then(r => {
+                this.cart = {items: []}
+                return getDb()
+                    .collection('users')
+                    .updateOne(
+                        {_id: new ObjectId(this._id)},
+                        {$set: {cart: {items: []}}}
+                    )
+            })
+    }
+
+    getOrders() {
+        // TODO does not work
+        return getDb()
+            .collection('orders')
+            .find({ "user._id": new ObjectId(this._id) })
+            .toArray()
+    }
 }
 module.exports = User
