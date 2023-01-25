@@ -79,7 +79,7 @@ class User {
             .then(p => {
                 const cart = {items: p, user: {_id: new ObjectId(this._id), username: this.username}}
                 return db
-                    .collection('order')
+                    .collection('orders')
                     .insertOne(cart)
             })
             .then(r => {
@@ -94,7 +94,6 @@ class User {
     }
 
     getOrders() {
-        // TODO does not work
         return getDb()
             .collection('orders')
             .find({ "user._id": new ObjectId(this._id) })
