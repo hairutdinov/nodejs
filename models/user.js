@@ -36,7 +36,6 @@ userSchema.methods.addToCart = function (product) {
 
     this.cart = { items: updatedCartItems }
     return this.save()
-
 }
 
 module.exports = mongoose.model('User', userSchema)

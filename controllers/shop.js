@@ -28,9 +28,11 @@ exports.getProductDetail = async (req, res, next) => {
 }
 
 exports.getCart = async (req, res, next) => {
-    req.user.getCart()
-        .then(cartProducts => {
-            res.render('shop/cart', { title: 'Cart', path: '/cart', cartProducts })
+    req.user
+        .populate('cart.items.productId')
+        // .execPopulate()
+        .then(user => {
+            res.render('shop/cart', { title: 'Cart', path: '/cart', products:user.cart.items })
         })
         .catch(console.error)
 }

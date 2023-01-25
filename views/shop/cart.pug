@@ -2,13 +2,13 @@ extends ../layouts/main-layout
 
 block content
     main
-        if cartProducts.length > 0
+        if products.length > 0
             ul
-                each product in cartProducts
+                each product in products
                     li
-                        p #{ product.title } (#{ product.quantity })
+                        p #{ product.productId.title } (#{ product.quantity })
                         form(action='/cart/delete' method='post')
-                            input#id(type='hidden' name='id' value=`${ product._id }`)
+                            input#id(type='hidden' name='id' value=`${ product.productId._id }`)
                             button.btn Delete
             form(action='/order/create' method='post')
                 button  Order now
