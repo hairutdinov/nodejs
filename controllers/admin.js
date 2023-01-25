@@ -48,6 +48,7 @@ exports.postEditProduct = async (req, res) => {
 
 exports.getProductList = async (req, res) => {
     Product.find()
+        .populate('userId')
         .then(products => {
             res.render('admin/product-list', { products, title: 'Admin Products', path: '/admin/product-list' })
         })
