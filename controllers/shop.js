@@ -97,6 +97,9 @@ exports.postCreateOrder = async (req, res) => {
             return order.save()
         })
         .then(() => {
+            return req.user.clearCart()
+        })
+        .then(() => {
             res.redirect('/orders')
         })
         .catch(console.error)
