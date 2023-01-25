@@ -63,12 +63,14 @@ exports.getCheckout = async (req, res, next) => {
 
 exports.postCartDelete = async (req, res) => {
     const { id } = req.body
-    req.user.deleteItemFromCart(id)
+    req.user.removeFromCart(id)
         .then(() => {
             res.redirect('/cart')
         })
-        .catch(console.error)
-    res.redirect('/cart')
+        .catch(e => {
+            console.error(e)
+            res.redirect('/cart')
+        })
 }
 
 exports.postCreateOrder = async (req, res) => {
