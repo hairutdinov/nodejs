@@ -50,7 +50,7 @@ exports.postCart = async (req, res, next) => {
 }
 
 exports.getOrders = async (req, res, next) => {
-    req.user.getOrders()
+    Order.find({ 'user.id': req.user._id })
         .then(orders => {
             res.render('shop/orders', { title: 'Orders', path: '/orders', orders })
         })
