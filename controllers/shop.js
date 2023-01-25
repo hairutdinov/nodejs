@@ -2,7 +2,7 @@ const adminData = require("../routes/admin");
 const Product = require('../models/product')
 
 exports.getIndex = async (req, res) => {
-    Product.fetchAll()
+    Product.find()
         .then(products => {
             res.render('shop/index', { products, title: 'Shop', path: '/' })
         })
@@ -10,7 +10,7 @@ exports.getIndex = async (req, res) => {
 }
 
 exports.getProducts = async (req, res, next) => {
-    Product.fetchAll()
+    Product.find()
         .then(products => {
             res.render('shop/products', { products, title: 'Products', path: '/products' })
 
