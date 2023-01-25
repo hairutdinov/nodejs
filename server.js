@@ -9,12 +9,17 @@ require('dotenv').config();
 const mongoose = require('mongoose')
 
 const session = require('express-session')
+const MongoDBStore = require('connect-mongodb-session')(session)
 
 const errorController = require('./controllers/error')
 
 const User = require('./models/user')
 
 const app = express()
+const store = new MongoDBStore({
+    uri: process.env.MONGO_CONNECTION_URI,
+    collection: 'sessions'
+})
 
 app.set('view engine', 'pug')
 // where to find pug template
@@ -31,7 +36,8 @@ app.use(express.static(path.join(rootDir, 'public')))
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false, // session will not be saved on every request/every response, only if smth change
-    saveUninitialized: false
+    saveUninitialized: false,
+    store
 }))
 
 app.use((req, res, next) => {
