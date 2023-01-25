@@ -1,16 +1,19 @@
 extends ../layouts/main-layout
 
+block styles
+    link(rel='stylesheet', href='/css/cart.css')
 block content
     main
         if products.length > 0
-            ul
+            ul.cart__item-list
                 each product in products
-                    li
+                    li.cart__item
                         p #{ product.productId.title } (#{ product.quantity })
                         form(action='/cart/delete' method='post')
                             input#id(type='hidden' name='id' value=`${ product.productId._id }`)
                             button.btn Delete
-            form(action='/order/create' method='post')
-                button  Order now
+            .centered
+                form(action='/order/create' method='post')
+                    button.btn  Order now
         else
             h1 No Products in Cart

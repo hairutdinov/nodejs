@@ -20,6 +20,7 @@ app.set('views', 'views')
 
 const adminRoute = require('./routes/admin')
 const shopRoute = require('./routes/shop')
+const authRoute = require('./routes/auth')
 
 app.use(bodyParser.urlencoded({extended: false}))
 
@@ -36,6 +37,7 @@ app.use((req, res, next) => {
 
 app.use('/admin', adminRoute)
 app.use(shopRoute)
+app.use(authRoute)
 
 app.use(errorController.actionNotFound)
 
