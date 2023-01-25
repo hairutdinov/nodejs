@@ -1,5 +1,6 @@
 const adminData = require("../routes/admin");
 const Product = require('../models/product')
+const Order = require('../models/order')
 
 exports.getIndex = async (req, res) => {
     Product.find()
@@ -44,7 +45,6 @@ exports.postCart = async (req, res, next) => {
             return req.user.addToCart(product)
         })
         .then(result => {
-            console.log(result)
             res.redirect('/cart')
         })
 }
@@ -74,7 +74,26 @@ exports.postCartDelete = async (req, res) => {
 }
 
 exports.postCreateOrder = async (req, res) => {
-    req.user.addOrder()
+    const { id } = req.body
+    const products = req.user
+        .populate('cart.items.productId')
+        // .execPopulate()
+        .then(user => {
+            const products = user.cart.items.map(i => ({
+                quantity: i.quantity,
+                product: i.productId,
+            }))
+
+            const order = new Order({
+                user: {
+                    name: req.user.name,
+                    id: req.user._id
+                },
+                products
+            })
+
+            return order.save()
+        })
         .then(() => {
             res.redirect('/orders')
         })
