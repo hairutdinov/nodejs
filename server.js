@@ -56,6 +56,12 @@ app.use((req, res, next) => {
         .catch(console.error)
 })
 
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session.isLoggedIn
+    res.locals.csrfToken =  req.csrfToken()
+    next()
+})
+
 app.use('/admin', adminRoute)
 app.use(shopRoute)
 app.use(authRoute)

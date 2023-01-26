@@ -6,6 +6,7 @@ block styles
 block content
     main
         form.product-form(action=`/admin/${ id ? `edit-product/${ id }` : 'add-product' }` method='POST')
+            input(type='hidden' value=`${ csrfToken }` name='_csrf')
             input#id(type='hidden' name='id' value=`${ id }`)
             .form-control
                 label(for='title') Title

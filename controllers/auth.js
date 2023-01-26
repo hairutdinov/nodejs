@@ -5,8 +5,6 @@ exports.getLogin = (req, res, next) => {
     res.render('auth/login', {
         path: '/auth/login',
         title: 'Login',
-        isAuthenticated: req.session.isLoggedIn,
-        csrfToken: req.csrfToken()
     })
 }
 
