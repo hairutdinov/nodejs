@@ -26,3 +26,25 @@ exports.postLogout = (req, res, next) => {
         res.redirect('/')
     })
 }
+
+exports.getSignup = (req, res, next) => {
+    res.render('auth/signup')
+}
+
+exports.postSignup = (req, res, next) => {
+    const { email, password, confirmPassword } = req.body
+    User.findOne({ email })
+        .then(u => {
+            if (u) return res.redirect('/signup')
+            const user = new User({
+                email,
+                password,
+                cart: { items: [] }
+            })
+            return user.save()
+        })
+        .then(() => {
+            res.redirect('/login')
+        })
+        .catch(console.error)
+}

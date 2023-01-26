@@ -60,22 +60,6 @@ mongoose.set('strictQuery', false)
 mongoose.connect(process.env.MONGO_CONNECTION_URI)
     .then(r => {
         console.log('Connected successfully to MongoDB server');
-        User.findOne()
-            .then(user => {
-                if (!user) {
-                    const user = new User({
-                        name: 'Bulat',
-                        email: 'bulat@test.com',
-                        cart: {
-                            items: []
-                        }
-                    })
-                    return user.save()
-                }
-                return null
-            })
-            .then(() => {
-                app.listen(8101)
-            })
+        app.listen(8101)
     })
     .catch(console.error)
