@@ -3,30 +3,27 @@ const path = require('path')
 const express = require('express')
 const rootDir = require('./helpers/path')
 const bodyParser = require('body-parser')
+const mongoose = require('mongoose')
+const session = require('express-session')
+const MongoDBStore = require('connect-mongodb-session')(session)
+const errorController = require('./controllers/error')
+const User = require('./models/user')
+const flash = require('connect-flash')
+
+const csrf = require('csurf')
+const csrfProtection = csrf()
+
+const app = express()
 
 require('dotenv').config();
 
-const mongoose = require('mongoose')
-
-const session = require('express-session')
-const MongoDBStore = require('connect-mongodb-session')(session)
-
-const csrf = require('csurf')
-
-const errorController = require('./controllers/error')
-
-const User = require('./models/user')
-
-const app = express()
 const store = new MongoDBStore({
     uri: process.env.MONGO_CONNECTION_URI,
     collection: 'sessions'
 })
 
-const csrfProtection = csrf()
 
 app.set('view engine', 'pug')
-// where to find pug template
 app.set('views', 'views')
 
 const adminRoute = require('./routes/admin')
@@ -45,6 +42,7 @@ app.use(session({
 }))
 
 app.use(csrfProtection)
+app.use(flash())
 
 app.use((req, res, next) => {
     if (!req.session.user) return next()
