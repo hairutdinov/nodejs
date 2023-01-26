@@ -10,14 +10,22 @@ exports.getLogin = (req, res, next) => {
 }
 
 exports.postLogin = (req, res, next) => {
-    User.findById(process.env.MONGO_USER_ID)
+    const { email, password } = req.body
+
+    User.findOne({ email })
         .then(user => {
-            req.session.isLoggedIn = true
-            req.session.user = user
-            req.session.save(e => {
-                console.error(e)
-                res.redirect('/')
-            })
+            if (!user) return res.redirect('/login')
+            bcrypt.compare(password, user.password)
+                .then(doMatch => {
+                    if (!doMatch) return res.redirect('/login')
+                    req.session.isLoggedIn = true
+                    req.session.user = user
+                    req.session.save(e => {
+                        if (e) console.error(e)
+                        res.redirect('/')
+                    })
+                })
+                .catch(console.error)
         })
         .catch(console.error)
 }
