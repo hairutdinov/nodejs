@@ -5,7 +5,7 @@ const Order = require('../models/order')
 exports.getIndex = async (req, res) => {
     Product.find()
         .then(products => {
-            res.render('shop/index', { products, title: 'Shop', path: '/', isAuthenticated: req.session.isLoggedIn })
+            res.render('shop/index', { products, title: 'Shop', path: '/' })
         })
         .catch(console.error)
 }
@@ -13,7 +13,7 @@ exports.getIndex = async (req, res) => {
 exports.getProducts = async (req, res, next) => {
     Product.find()
         .then(products => {
-            res.render('shop/products', { products, title: 'Products', path: '/products', isAuthenticated: req.session.isLoggedIn })
+            res.render('shop/products', { products, title: 'Products', path: '/products' })
 
         })
         .catch(console.error)
@@ -23,7 +23,7 @@ exports.getProductDetail = async (req, res, next) => {
     const { id } = req.params
     Product.findById(id)
         .then(product => {
-            res.render('shop/product-detail', { title: `Product Detail | ${ product.title }`, path: '/product-detail', product, isAuthenticated: req.session.isLoggedIn })
+            res.render('shop/product-detail', { title: `Product Detail | ${ product.title }`, path: '/product-detail', product })
         })
         .catch(console.error)
 }
@@ -33,7 +33,7 @@ exports.getCart = async (req, res, next) => {
         .populate('cart.items.productId')
         // .execPopulate()
         .then(user => {
-            res.render('shop/cart', { title: 'Cart', path: '/cart', products:user.cart.items, isAuthenticated: req.session.isLoggedIn })
+            res.render('shop/cart', { title: 'Cart', path: '/cart', products:user.cart.items })
         })
         .catch(console.error)
 }
@@ -52,13 +52,13 @@ exports.postCart = async (req, res, next) => {
 exports.getOrders = async (req, res, next) => {
     Order.find({ 'user.id': req.user._id })
         .then(orders => {
-            res.render('shop/orders', { title: 'Orders', path: '/orders', orders, isAuthenticated: req.session.isLoggedIn })
+            res.render('shop/orders', { title: 'Orders', path: '/orders', orders })
         })
         .catch(console.error)
 }
 
 exports.getCheckout = async (req, res, next) => {
-    res.render('shop/checkout', { title: 'Checkout', path: '/checkout', isAuthenticated: req.session.isLoggedIn })
+    res.render('shop/checkout', { title: 'Checkout', path: '/checkout' })
 }
 
 exports.postCartDelete = async (req, res) => {

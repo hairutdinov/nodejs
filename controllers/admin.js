@@ -6,11 +6,11 @@ exports.getEditProduct = async (req, res) => {
         Product.findById(id)
             .then(product => {
                 if (!product) return res.redirect('/admin/product-list')
-                res.render('admin/edit-product', { title: 'Add Product', path: '/admin/add-product', product, id, isAuthenticated: req.session.isLoggedIn })
+                res.render('admin/edit-product', { title: 'Add Product', path: '/admin/add-product', product, id })
             })
             .catch(err => console.error(err))
     } else {
-        res.render('admin/edit-product', { title: 'Add Product', path: '/admin/add-product', id, isAuthenticated: req.session.isLoggedIn })
+        res.render('admin/edit-product', { title: 'Add Product', path: '/admin/add-product', id })
     }
 }
 
@@ -50,7 +50,7 @@ exports.getProductList = async (req, res) => {
     Product.find()
         .populate('userId')
         .then(products => {
-            res.render('admin/product-list', { products, title: 'Admin Products', path: '/admin/product-list', isAuthenticated: req.session.isLoggedIn })
+            res.render('admin/product-list', { products, title: 'Admin Products', path: '/admin/product-list' })
         })
         .catch(console.error)
 }
