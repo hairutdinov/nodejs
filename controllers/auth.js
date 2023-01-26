@@ -1,5 +1,14 @@
+const crypto = require('crypto')
 const User = require('../models/user')
 const bcrypt = require('bcryptjs')
+const nodemailer = require('nodemailer')
+const sendGridTransport = require('nodemailer-sendgrid-transport')
+
+const transporter = nodemailer.createTransport(sendGridTransport({
+    auth: {
+        api_key: process.env.SEND_GRID_MAILER_API_KEY,
+    }
+}))
 
 exports.getLogin = (req, res, next) => {
     let errorMessage = req.flash('error')
@@ -65,6 +74,117 @@ exports.postSignup = (req, res, next) => {
                         cart: { items: [] }
                     })
                     return user.save()
+                })
+                .then(() => {
+                    res.redirect('/login')
+                    return transporter.sendMail({
+                        to: email,
+                        from: 'bulatsemail@gmail.com',
+                        subject: 'Signup succeeded!',
+
+                        html: `<h1>You successfully signed up!</h1>`
+                    })
+                })
+                .catch(console.error)
+        })
+        .catch(console.error)
+}
+
+exports.getReset = (req, res, next) => {
+    let errorMessage = req.flash('error')
+    if (errorMessage.length > 0) {
+        errorMessage = errorMessage[0]
+    } else {
+        errorMessage = null
+    }
+    res.render('auth/reset', {
+        path: '/auth/reset',
+        title: 'Reset',
+        errorMessage
+    })
+}
+
+exports.postReset = (req, res, next) => {
+    const { email } = req.body
+    crypto.randomBytes(32, (e, buffer) => {
+        if (e) {
+            console.error(e)
+            return res.redirect('/reset')
+        }
+
+        const token = buffer.toString('hex')
+
+        User.findOne({ email })
+            .then(u => {
+                if (!u) {
+                    req.flash('error', 'No account with that email found.')
+                    return res.redirect('/reset')
+                }
+                const hourInMilliseconds = 60 * 60 * 1000
+                u.resetToken = token
+                u.resetTokenExpiration = Date.now() + hourInMilliseconds
+                return u.save()
+            })
+            .then(() => {
+                res.redirect('/')
+                return transporter.sendMail({
+                    to: email,
+                    from: 'bulatsemail@gmail.com',
+                    subject: 'Password reset',
+
+                    html: `
+                        <p>You requested a password reset</p>
+                        <p>Click this <a href="http://localhost:8101/reset/${ token }">link</a> to set a new password</p>
+                    `
+                })
+            })
+            .catch(console.error)
+    })
+}
+
+
+exports.getNewPassword = (req, res, next) => {
+    const { token } = req.params
+    User.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } })
+        .then(u => {
+            let errorMessage = req.flash('error')
+            if (errorMessage.length > 0) {
+                errorMessage = errorMessage[0]
+            } else {
+                errorMessage = null
+            }
+
+            if (!u) {
+                req.flash('error', 'Invalid user token!')
+                return res.redirect('/reset')
+            }
+
+            res.render('auth/new-password', {
+                path: '/auth/new-password',
+                title: 'Updating Password',
+                errorMessage,
+                userId: u._id.toString(),
+                token,
+            })
+
+        })
+        .catch(console.error)
+}
+
+exports.postNewPassword = (req, res, next) => {
+    const { password, userId, token } = req.body
+
+    User.findOne({ _id: userId, resetToken: token, resetTokenExpiration: { $gt: Date.now() } })
+        .then(u => {
+            if (!u) {
+                req.flash('error', 'Invalid user token.')
+                return res.redirect('/reset')
+            }
+            bcrypt.hash(password, 12)
+                .then(hashedPassword => {
+                    u.password = hashedPassword
+                    u.resetToken = u.resetTokenExpiration = undefined
+                    return u.save()
                 })
                 .then(() => {
                     res.redirect('/login')
