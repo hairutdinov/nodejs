@@ -9,7 +9,19 @@ router.post('/login', authController.postLogin)
 
 router.get('/signup', authController.getSignup)
 
-router.post('/signup', body('email').isEmail().withMessage('Please enter a valid email'), authController.postSignup)
+router.post(
+    '/signup',
+    body('email')
+        .isEmail()
+        .withMessage('Please enter a valid email')
+        .custom((value, { req }) => {
+            if (value === 'test@test.com') {
+                throw new Error('This email address is forbidden.')
+            }
+            return true
+        }),
+    authController.postSignup
+)
 
 router.post('/logout', authController.postLogout)
 
