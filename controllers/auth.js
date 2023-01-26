@@ -75,29 +75,24 @@ exports.postSignup = (req, res, next) => {
             errorMessage: errors.array()[0].msg
         })
     }
-    User.findOne({ email })
-        .then(u => {
-            if (u) return res.redirect('/signup')
-            return bcrypt.hash(password, 12)
-                .then(hashedPassword => {
-                    const user = new User({
-                        email,
-                        password: hashedPassword,
-                        cart: { items: [] }
-                    })
-                    return user.save()
-                })
-                .then(() => {
-                    res.redirect('/login')
-                    return transporter.sendMail({
-                        to: email,
-                        from: 'bulatsemail@gmail.com',
-                        subject: 'Signup succeeded!',
+    return bcrypt.hash(password, 12)
+        .then(hashedPassword => {
+            const user = new User({
+                email,
+                password: hashedPassword,
+                cart: { items: [] }
+            })
+            return user.save()
+        })
+        .then(() => {
+            res.redirect('/login')
+            return transporter.sendMail({
+                to: email,
+                from: 'bulatsemail@gmail.com',
+                subject: 'Signup succeeded!',
 
-                        html: `<h1>You successfully signed up!</h1>`
-                    })
-                })
-                .catch(console.error)
+                html: `<h1>You successfully signed up!</h1>`
+            })
         })
         .catch(console.error)
 }
