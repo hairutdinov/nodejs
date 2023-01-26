@@ -10,13 +10,15 @@ router.post('/login',
     [
         body('email')
             .isEmail()
-            .withMessage('Please enter a valid email'),
+            .withMessage('Please enter a valid email')
+            .normalizeEmail(),
         body(
         'password',
             'Please enter a password with only numbers and text and at least 5 chars'
         )
             .isLength({ min: 5 })
             .isAlphanumeric()
+            .trim()
     ],
     authController.postLogin
 )
@@ -35,14 +37,17 @@ router.post(
                     .then(u => {
                         if (u) return Promise.reject('E-mail exists already, please pick a different one.')
                     })
-            }),
+            })
+            .normalizeEmail(),
         body(
             'password',
             'Please enter a password with only numbers and text and at least 5 chars' // default error msg for all validators
         )
+            .trim()
             .isLength({ min: 5 })
             .isAlphanumeric(),
         body('confirmPassword')
+            .trim()
             .custom((value, { req }) => {
                 if (value !== req.body.password) {
                     throw new Error('Passwords have to match!')
