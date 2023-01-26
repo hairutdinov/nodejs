@@ -11,15 +11,23 @@ router.get('/signup', authController.getSignup)
 
 router.post(
     '/signup',
-    body('email')
-        .isEmail()
-        .withMessage('Please enter a valid email')
-        .custom((value, { req }) => {
-            if (value === 'test@test.com') {
-                throw new Error('This email address is forbidden.')
-            }
-            return true
-        }),
+    [
+        body('email')
+            .isEmail()
+            .withMessage('Please enter a valid email')
+            .custom((value, { req }) => {
+                if (value === 'test@test.com') {
+                    throw new Error('This email address is forbidden.')
+                }
+                return true
+            }),
+        body(
+            'password',
+            'Please enter a password with only numbers and text and at least 5 chars' // default error msg for all validators
+        )
+            .isLength({ min: 5 })
+            .isAlphanumeric()
+    ],
     authController.postSignup
 )
 
