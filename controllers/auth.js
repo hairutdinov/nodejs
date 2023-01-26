@@ -70,6 +70,10 @@ exports.getSignup = (req, res, next) => {
     res.render('auth/signup', {
         path: '/auth/signup',
         title: 'Signup',
+        postData: {
+            email: '',
+            password: '',
+        },
     })
 }
 
@@ -80,7 +84,8 @@ exports.postSignup = (req, res, next) => {
         return res.status(422).render('auth/signup', {
             path: '/auth/signup',
             title: 'Signup',
-            errorMessage: errors.array()[0].msg
+            errorMessage: errors.array()[0].msg,
+            postData: { email, password },
         })
     }
     return bcrypt.hash(password, 12)
