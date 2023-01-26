@@ -88,7 +88,7 @@ exports.postCreateOrder = async (req, res) => {
 
             const order = new Order({
                 user: {
-                    name: req.user.name,
+                    email: req.user.email,
                     id: req.user._id
                 },
                 products
