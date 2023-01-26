@@ -5,15 +5,18 @@ block styles
     link(rel='stylesheet', href='/css/auth.css')
 
 block content
-    form.login-form(action='/signup' method='POST')
-        input(type='hidden' value=`${ csrfToken }` name='_csrf')
-        .form-control
-            label(for='email') E-Mail
-            input#email(type='email' name='email')
-        .form-control
-            label(for='password') Password
-            input#password(type='password' name='password')
-        .form-control
-            label(for='confirmPassword') Confirm Password
-            input#confirmPassword(type='password' name='confirmPassword')
-        button.btn(type='submit') Signup
+    main
+        if errorMessage
+            div.user-message.user-message--error #{ errorMessage }
+        form.login-form(action='/signup' method='POST')
+            input(type='hidden' value=`${ csrfToken }` name='_csrf')
+            .form-control
+                label(for='email') E-Mail
+                input#email(type='email' name='email')
+            .form-control
+                label(for='password') Password
+                input#password(type='password' name='password')
+            .form-control
+                label(for='confirmPassword') Confirm Password
+                input#confirmPassword(type='password' name='confirmPassword')
+            button.btn(type='submit') Signup

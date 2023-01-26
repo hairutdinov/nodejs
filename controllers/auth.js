@@ -3,6 +3,7 @@ const User = require('../models/user')
 const bcrypt = require('bcryptjs')
 const nodemailer = require('nodemailer')
 const sendGridTransport = require('nodemailer-sendgrid-transport')
+const { validationResult } = require('express-validator')
 
 const transporter = nodemailer.createTransport(sendGridTransport({
     auth: {
@@ -58,11 +59,22 @@ exports.postLogout = (req, res, next) => {
 }
 
 exports.getSignup = (req, res, next) => {
-    res.render('auth/signup')
+    res.render('auth/signup', {
+        path: '/auth/signup',
+        title: 'Signup',
+    })
 }
 
 exports.postSignup = (req, res, next) => {
     const { email, password, confirmPassword } = req.body
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(422).render('auth/signup', {
+            path: '/auth/signup',
+            title: 'Signup',
+            errorMessage: errors.array()[0].msg
+        })
+    }
     User.findOne({ email })
         .then(u => {
             if (u) return res.redirect('/signup')
@@ -141,7 +153,6 @@ exports.postReset = (req, res, next) => {
             .catch(console.error)
     })
 }
-
 
 exports.getNewPassword = (req, res, next) => {
     const { token } = req.params
