@@ -11,6 +11,8 @@ const mongoose = require('mongoose')
 const session = require('express-session')
 const MongoDBStore = require('connect-mongodb-session')(session)
 
+const csrf = require('csurf')
+
 const errorController = require('./controllers/error')
 
 const User = require('./models/user')
@@ -20,6 +22,8 @@ const store = new MongoDBStore({
     uri: process.env.MONGO_CONNECTION_URI,
     collection: 'sessions'
 })
+
+const csrfProtection = csrf()
 
 app.set('view engine', 'pug')
 // where to find pug template
@@ -39,6 +43,8 @@ app.use(session({
     saveUninitialized: false,
     store
 }))
+
+app.use(csrfProtection)
 
 app.use((req, res, next) => {
     if (!req.session.user) return next()
