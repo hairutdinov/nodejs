@@ -17,7 +17,8 @@ exports.getEditProduct = async (req, res) => {
 exports.postEditProduct = async (req, res, next) => {
     try {
         const id = req.body?.id ? req.body.id : ''
-        const { title, price, description, imageUrl } = req.body
+        const { title, price, description } = req.body
+        const image = req.file
 
         if (id) {
             Product.findById(id)
@@ -28,7 +29,6 @@ exports.postEditProduct = async (req, res, next) => {
                     p.title = title
                     p.price = price
                     p.description = description
-                    p.imageUrl = imageUrl
                     return p.save()
                 })
                 .then(r => {
@@ -41,7 +41,7 @@ exports.postEditProduct = async (req, res, next) => {
                     return next(error)
                 })
         } else {
-            const product = new Product({ title, price, description, imageUrl, userId: req.user })
+            const product = new Product({ title, price, description, userId: req.user })
             product.save()
                 .then(r => {
                     res.redirect(`/admin/product-list`)

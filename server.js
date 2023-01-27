@@ -9,9 +9,21 @@ const MongoDBStore = require('connect-mongodb-session')(session)
 const errorController = require('./controllers/error')
 const User = require('./models/user')
 const flash = require('connect-flash')
+const multer = require('multer')
 
 const csrf = require('csurf')
 const csrfProtection = csrf()
+
+const fileStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'images')
+    },
+    filename: function (req, file, cb) {
+        // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+        const uniqueSuffix = new Date().toISOString()
+        cb(null, uniqueSuffix + '-' + file.originalname)
+    }
+})
 
 const app = express()
 
@@ -31,6 +43,7 @@ const shopRoute = require('./routes/shop')
 const authRoute = require('./routes/auth')
 
 app.use(bodyParser.urlencoded({extended: false}))
+app.use(multer({ storage: fileStorage }).single('image'))
 
 app.use(express.static(path.join(rootDir, 'public')))
 
