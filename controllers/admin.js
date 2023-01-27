@@ -1,4 +1,5 @@
 const Product = require('../models/product')
+const mongoose = require('mongoose')
 
 exports.getEditProduct = async (req, res) => {
     const id = req.params?.id ? req.params.id : ''
@@ -14,7 +15,7 @@ exports.getEditProduct = async (req, res) => {
     }
 }
 
-exports.postEditProduct = async (req, res) => {
+exports.postEditProduct = async (req, res, next) => {
     try {
         const id = req.body?.id ? req.body.id : ''
         const { title, price, description, imageUrl } = req.body
@@ -36,14 +37,16 @@ exports.postEditProduct = async (req, res) => {
                 })
                 .catch(console.error)
         } else {
-            const product = new Product({ title, price, description, imageUrl, userId: req.user })
+            const product = new Product({ _id: new mongoose.Types.ObjectId('63d1016e4911c148fe7858ee'), title, price, description, imageUrl, userId: req.user })
             product.save()
                 .then(r => {
                     res.redirect(`/admin/product-list`)
                 })
                 .catch(e => {
                     console.error(e)
-                    return res.redirect('/500-internal-server-error')
+                    const error = new Error(e) // 'Creating a product failed.'
+                    error.httpStatusCode = 500
+                    return next(error)
                 })
         }
     } catch (e) {

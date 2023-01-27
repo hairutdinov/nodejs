@@ -70,6 +70,11 @@ app.use(authRoute)
 app.use('/500-internal-server-error', errorController.internalServerError)
 app.use(errorController.notFound)
 
+app.use((e, req, res, next) => {
+    // e.httpStatusCode
+    res.redirect('/500-internal-server-error')
+})
+
 mongoose.set('strictQuery', false)
 mongoose.connect(process.env.MONGO_CONNECTION_URI)
     .then(r => {
