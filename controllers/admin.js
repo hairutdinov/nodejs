@@ -1,4 +1,5 @@
 const Product = require('../models/product')
+const fileHelper = require('../util/file')
 
 exports.getAddProduct = async (req, res, next) => {
     res.render('admin/edit-product', {
@@ -75,7 +76,10 @@ exports.postEditProduct = async (req, res, next) => {
                 p.title = title
                 p.price = price
                 p.description = description
-                if (image) p.imageUrl = image.path
+                if (image) {
+                    fileHelper.deleteFile(p.imageUrl)
+                    p.imageUrl = image.path
+                }
                 return p.save()
             })
             .then(r => {
@@ -107,13 +111,20 @@ exports.getProductList = async (req, res) => {
         })
 }
 
-exports.postDeleteProduct = async (req, res) => {
+exports.postDeleteProduct = async (req, res, next) => {
     try {
         const id = req.body?.id ? req.body.id : ''
-        Product.deleteOne({ _id: id, userId: req.user._id })
+        Product.findById(id)
+            .then(p => {
+                if (p) {
+                    fileHelper.deleteFile(p.imageUrl)
+                }
+                return Product.deleteOne({ _id: id, userId: req.user._id })
+            })
             .then(() => {
                 res.redirect(`/admin/product-list`)
             })
+            .catch(e => next(e))
     } catch (e) {
         console.error(e)
         res.redirect(`/admin/product-list`)
