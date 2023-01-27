@@ -48,10 +48,13 @@ app.use((req, res, next) => {
     if (!req.session.user) return next()
     User.findById(req.session.user._id)
         .then(user => {
+            if (!user) return next()
             req.user = user
             next()
         })
-        .catch(console.error)
+        .catch(e => {
+            throw new Error(e)
+        })
 })
 
 app.use((req, res, next) => {
@@ -64,7 +67,8 @@ app.use('/admin', adminRoute)
 app.use(shopRoute)
 app.use(authRoute)
 
-app.use(errorController.actionNotFound)
+app.use('/500-internal-server-error', errorController.internalServerError)
+app.use(errorController.notFound)
 
 mongoose.set('strictQuery', false)
 mongoose.connect(process.env.MONGO_CONNECTION_URI)
@@ -72,4 +76,6 @@ mongoose.connect(process.env.MONGO_CONNECTION_URI)
         console.log('Connected successfully to MongoDB server');
         app.listen(8101)
     })
-    .catch(console.error)
+    .catch(e => {
+        console.error(e)
+    })

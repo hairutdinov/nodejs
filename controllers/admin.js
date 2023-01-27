@@ -41,7 +41,10 @@ exports.postEditProduct = async (req, res) => {
                 .then(r => {
                     res.redirect(`/admin/product-list`)
                 })
-                .catch(console.error)
+                .catch(e => {
+                    console.error(e)
+                    return res.redirect('/500-internal-server-error')
+                })
         }
     } catch (e) {
         console.error(e)
