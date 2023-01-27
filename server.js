@@ -99,6 +99,7 @@ app.use(errorController.notFound)
 app.use((e, req, res, next) => {
     // e.httpStatusCode
     // res.redirect('/500-internal-server-error')
+    console.error('Internal server error: ', e)
     res.status(500).render('500-internal-server-error', { title: '500 Internal Server Error' })
 })
 
