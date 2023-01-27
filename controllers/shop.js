@@ -3,6 +3,7 @@ const Product = require('../models/product')
 const Order = require('../models/order')
 const fs = require('fs')
 const path = require('path')
+const PDFDocument = require('pdfkit')
 
 exports.getIndex = async (req, res) => {
     Product.find()
@@ -146,20 +147,14 @@ exports.getInvoice = (req, res, next) => {
 
             const invoiceName = `invoice-${ orderId }.pdf`
             const invoicePath = path.join('data', 'invoices', invoiceName)
-            /*
-            * Streamin' response data
-            * better than reading in to the memory
-            * */
-            const file = fs.createReadStream(invoicePath)
+            const pdfDoc = new PDFDocument()
             res.setHeader('Content-Type', 'application/pdf')
             res.setHeader('Content-Disposition', `attachment; filename="${ invoiceName }"`)
-            /*
-            * using that file read stream
-            * and forward data that is read in that stream
-            * to response (cause res object is a writable stream)
-            * can use readable streams to pipe their output in to writable stream
-            * */
-            file.pipe(res)
+            pdfDoc.pipe(fs.createWriteStream(invoicePath))
+            pdfDoc.pipe(res)
+            pdfDoc.text('Hello world')
+            pdfDoc.end()
+
         })
         .catch(e => next(e))
 }
