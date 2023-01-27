@@ -45,6 +45,12 @@ app.use(csrfProtection)
 app.use(flash())
 
 app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session.isLoggedIn
+    res.locals.csrfToken =  req.csrfToken()
+    next()
+})
+
+app.use((req, res, next) => {
     if (!req.session.user) return next()
     User.findById(req.session.user._id)
         .then(user => {
@@ -53,14 +59,8 @@ app.use((req, res, next) => {
             next()
         })
         .catch(e => {
-            throw new Error(e)
+            next(new Error(e))
         })
-})
-
-app.use((req, res, next) => {
-    res.locals.isAuthenticated = req.session.isLoggedIn
-    res.locals.csrfToken =  req.csrfToken()
-    next()
 })
 
 app.use('/admin', adminRoute)
@@ -72,7 +72,8 @@ app.use(errorController.notFound)
 
 app.use((e, req, res, next) => {
     // e.httpStatusCode
-    res.redirect('/500-internal-server-error')
+    // res.redirect('/500-internal-server-error')
+    res.status(500).render('500-internal-server-error', { title: '500 Internal Server Error' })
 })
 
 mongoose.set('strictQuery', false)
