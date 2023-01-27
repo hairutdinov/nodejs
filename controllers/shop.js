@@ -139,14 +139,21 @@ exports.postCreateOrder = async (req, res) => {
 
 exports.getInvoice = (req, res, next) => {
     const { orderId } = req.params
-    const invoiceName = `invoice-${ orderId }.pdf`
-    fs.readFile(path.join('data', 'invoices', invoiceName), (error, data) => {
-        if (error) {
-            return next(error)
-        }
-        res.setHeader('Content-Type', 'application/pdf')
-        // res.setHeader('Content-Disposition', `inline; filename="${ invoiceName }"`)
-        res.setHeader('Content-Disposition', `attachment; filename="${ invoiceName }"`)
-        res.send(data)
-    })
+    Order.findById(orderId)
+        .then(o => {
+            if (!o) return next(new Error('No order found'))
+            if (o.user.id.toString() !== req.user._id.toString()) return next(new Error('Unauthorized'))
+
+            const invoiceName = `invoice-${ orderId }.pdf`
+            fs.readFile(path.join('data', 'invoices', invoiceName), (error, data) => {
+                if (error) {
+                    return next(error)
+                }
+                res.setHeader('Content-Type', 'application/pdf')
+                // res.setHeader('Content-Disposition', `inline; filename="${ invoiceName }"`)
+                res.setHeader('Content-Disposition', `attachment; filename="${ invoiceName }"`)
+                res.send(data)
+            })
+        })
+        .catch(e => next(e))
 }
