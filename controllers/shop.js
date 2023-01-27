@@ -7,7 +7,12 @@ exports.getIndex = async (req, res) => {
         .then(products => {
             res.render('shop/index', { products, title: 'Shop', path: '/' })
         })
-        .catch(console.error)
+        .catch(e => {
+            console.error(e)
+            const error = new Error(e)
+            error.httpStatusCode = 500
+            return next(error)
+        })
 }
 
 exports.getProducts = async (req, res, next) => {
@@ -16,7 +21,12 @@ exports.getProducts = async (req, res, next) => {
             res.render('shop/products', { products, title: 'Products', path: '/products' })
 
         })
-        .catch(console.error)
+        .catch(e => {
+            console.error(e)
+            const error = new Error(e)
+            error.httpStatusCode = 500
+            return next(error)
+        })
 }
 
 exports.getProductDetail = async (req, res, next) => {
@@ -25,7 +35,12 @@ exports.getProductDetail = async (req, res, next) => {
         .then(product => {
             res.render('shop/product-detail', { title: `Product Detail | ${ product.title }`, path: '/product-detail', product })
         })
-        .catch(console.error)
+        .catch(e => {
+            console.error(e)
+            const error = new Error(e)
+            error.httpStatusCode = 500
+            return next(error)
+        })
 }
 
 exports.getCart = async (req, res, next) => {
@@ -35,7 +50,12 @@ exports.getCart = async (req, res, next) => {
         .then(user => {
             res.render('shop/cart', { title: 'Cart', path: '/cart', products:user.cart.items })
         })
-        .catch(console.error)
+        .catch(e => {
+            console.error(e)
+            const error = new Error(e)
+            error.httpStatusCode = 500
+            return next(error)
+        })
 }
 
 exports.postCart = async (req, res, next) => {
@@ -54,7 +74,12 @@ exports.getOrders = async (req, res, next) => {
         .then(orders => {
             res.render('shop/orders', { title: 'Orders', path: '/orders', orders })
         })
-        .catch(console.error)
+        .catch(e => {
+            console.error(e)
+            const error = new Error(e)
+            error.httpStatusCode = 500
+            return next(error)
+        })
 }
 
 exports.getCheckout = async (req, res, next) => {
@@ -102,5 +127,10 @@ exports.postCreateOrder = async (req, res) => {
         .then(() => {
             res.redirect('/orders')
         })
-        .catch(console.error)
+        .catch(e => {
+            console.error(e)
+            const error = new Error(e)
+            error.httpStatusCode = 500
+            return next(error)
+        })
 }
