@@ -1,6 +1,8 @@
 const adminData = require("../routes/admin");
 const Product = require('../models/product')
 const Order = require('../models/order')
+const fs = require('fs')
+const path = require('path')
 
 exports.getIndex = async (req, res) => {
     Product.find()
@@ -133,4 +135,18 @@ exports.postCreateOrder = async (req, res) => {
             error.httpStatusCode = 500
             return next(error)
         })
+}
+
+exports.getInvoice = (req, res, next) => {
+    const { orderId } = req.params
+    const invoiceName = `invoice-${ orderId }.pdf`
+    fs.readFile(path.join('data', 'invoices', invoiceName), (error, data) => {
+        if (error) {
+            return next(error)
+        }
+        res.setHeader('Content-Type', 'application/pdf')
+        // res.setHeader('Content-Disposition', `inline; filename="${ invoiceName }"`)
+        res.setHeader('Content-Disposition', `attachment; filename="${ invoiceName }"`)
+        res.send(data)
+    })
 }
