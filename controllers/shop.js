@@ -145,15 +145,21 @@ exports.getInvoice = (req, res, next) => {
             if (o.user.id.toString() !== req.user._id.toString()) return next(new Error('Unauthorized'))
 
             const invoiceName = `invoice-${ orderId }.pdf`
-            fs.readFile(path.join('data', 'invoices', invoiceName), (error, data) => {
-                if (error) {
-                    return next(error)
-                }
-                res.setHeader('Content-Type', 'application/pdf')
-                // res.setHeader('Content-Disposition', `inline; filename="${ invoiceName }"`)
-                res.setHeader('Content-Disposition', `attachment; filename="${ invoiceName }"`)
-                res.send(data)
-            })
+            const invoicePath = path.join('data', 'invoices', invoiceName)
+            /*
+            * Streamin' response data
+            * better than reading in to the memory
+            * */
+            const file = fs.createReadStream(invoicePath)
+            res.setHeader('Content-Type', 'application/pdf')
+            res.setHeader('Content-Disposition', `attachment; filename="${ invoiceName }"`)
+            /*
+            * using that file read stream
+            * and forward data that is read in that stream
+            * to response (cause res object is a writable stream)
+            * can use readable streams to pipe their output in to writable stream
+            * */
+            file.pipe(res)
         })
         .catch(e => next(e))
 }
