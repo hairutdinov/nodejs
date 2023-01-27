@@ -3,9 +3,9 @@ const router = express.Router()
 const adminController = require('../controllers/admin')
 const isAuth = require('../middleware/is-auth')
 
-router.get('/add-product', isAuth, adminController.getEditProduct)
+router.get('/add-product', isAuth, adminController.getAddProduct)
 
-router.post('/add-product', isAuth, adminController.postEditProduct)
+router.post('/add-product', isAuth, adminController.postAddProduct)
 
 router.get('/edit-product/:id', isAuth, adminController.getEditProduct)
 

@@ -5,22 +5,22 @@ block styles
     link(rel='stylesheet', href='/css/product.css')
 block content
     main
-        form.product-form(action=`/admin/${ id ? `edit-product/${ id }` : 'add-product' }` method='POST' enctype='multipart/form-data')
+        if errorMessage
+            div.user-message.user-message--error #{ errorMessage }
+        form.product-form(action=`/admin/${ editing ? `edit-product/${ id }` : 'add-product' }` method='POST' enctype='multipart/form-data')
             input(type='hidden' value=`${ csrfToken }` name='_csrf')
-            input#id(type='hidden' name='id' value=`${ id }`)
+            if editing
+                input#id(type='hidden' name='id' value=`${ id }`)
             .form-control
                 label(for='title') Title
-                input#title(type='text' name='title' value=`${ id ? product.title : '' }`)
-            //.form-control
-            //    label(for='image_url') Image URL
-            //    input#image_url(type='text' name='imageUrl' value=`${ id ? product.imageUrl : '' }`)
+                input#title(type='text' name='title' value=`${ (editing || hasError) ? product.title : '' }`)
             .form-control
                 label(for='image') Image URL
                 input#image(type='file' name='image')
             .form-control
                 label(for='price') Price
-                input#price(type='number' name='price', step='0.01' value=`${ id ? product.price : '' }`)
+                input#price(type='number' name='price', step='0.01' value=`${ (editing || hasError) ? product.price : '' }`)
             .form-control
                 label(for='description') Description
-                textarea#description(name='description', rows='6') #{ id ? product.description : '' }
-            button.btn(type='submit') #{ id ? 'Edit Product' : 'Add Product' }
+                textarea#description(name='description', rows='6') #{ (editing || hasError) ? product.description : '' }
+            button.btn(type='submit') #{ editing ? 'Edit Product' : 'Add Product' }
