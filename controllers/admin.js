@@ -17,6 +17,8 @@ exports.postAddProduct = async (req, res, next) => {
         return res.status(422).render(`admin/edit-product`, {
             title: 'Add Product',
             path: '/admin/add-product',
+            editing: true,
+            hasError: true,
             product: {
                 title,
                 price,
