@@ -152,7 +152,18 @@ exports.getInvoice = (req, res, next) => {
             res.setHeader('Content-Disposition', `attachment; filename="${ invoiceName }"`)
             pdfDoc.pipe(fs.createWriteStream(invoicePath))
             pdfDoc.pipe(res)
-            pdfDoc.text('Hello world')
+            pdfDoc.fontSize(26).text('Invoice', {
+                underline: true
+            })
+            pdfDoc.text('------------------------')
+            let totalPrice = 0
+            o.products.forEach(p => {
+                pdfDoc.fontSize(14).text(`${ p.product.title } - ${ p.quantity } x $${ p.product.price }`)
+                totalPrice += p.quantity * p.product.price
+            })
+            pdfDoc.text('------------------------')
+            pdfDoc.fontSize(20).text(`Total price: $${totalPrice}`)
+
             pdfDoc.end()
 
         })
