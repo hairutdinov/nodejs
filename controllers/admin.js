@@ -151,3 +151,24 @@ exports.postDeleteProduct = async (req, res, next) => {
         res.redirect(`/admin/product-list`)
     }
 }
+
+exports.deleteProduct = async (req, res, next) => {
+    const id = req.params?.id ? req.params.id : ''
+    Product.findById(id)
+        .then(p => {
+            if (p) {
+                fileHelper.deleteFile(p.imageUrl)
+            }
+            return Product.deleteOne({ _id: id, userId: req.user._id })
+        })
+        .then(() => {
+            res.status(200).json({
+                message: 'success'
+            })
+        })
+        .catch(e => {
+            res.status(500).json({
+                message: 'Deleting product failed'
+            })
+        })
+}

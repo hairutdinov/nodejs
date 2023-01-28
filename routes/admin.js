@@ -13,6 +13,8 @@ router.post('/edit-product/:id', isAuth, adminController.postEditProduct)
 
 router.post('/delete-product', isAuth, adminController.postDeleteProduct)
 
+router.delete('/product/:id', isAuth, adminController.deleteProduct)
+
 router.get('/product-list', isAuth, adminController.getProductList)
 
 module.exports = router
