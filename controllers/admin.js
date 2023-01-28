@@ -1,6 +1,8 @@
 const Product = require('../models/product')
 const fileHelper = require('../util/file')
 
+const ITEMS_PER_PAGE = 2
+
 exports.getAddProduct = async (req, res, next) => {
     res.render('admin/edit-product', {
         title: 'Add Product',
@@ -98,10 +100,29 @@ exports.postEditProduct = async (req, res, next) => {
 }
 
 exports.getProductList = async (req, res) => {
+    const page = +req.query.page || 1
+    let totalItems
     Product.find({ userId: req.user._id })
         .populate('userId')
+        .countDocuments()
+        .then(count => {
+            totalItems = count
+            return Product.find()
+                .skip((page - 1) * ITEMS_PER_PAGE)
+                .limit(ITEMS_PER_PAGE)
+        })
         .then(products => {
-            res.render('admin/product-list', { products, title: 'Admin Products', path: '/admin/product-list' })
+            res.render('admin/product-list', {
+                products,
+                title: 'Admin Products',
+                path: '/admin/product-list',
+                currentPage: page,
+                hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+                hasPreviousPage: page > 1,
+                nextPage: page + 1,
+                previousPage: page - 1,
+                lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+            })
         })
         .catch(e => {
             console.error(e)

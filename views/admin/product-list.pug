@@ -21,5 +21,6 @@ block content
                                 input(type='hidden' value=`${ csrfToken }` name='_csrf')
                                 input(type='hidden', name='id', value=`${ product._id }`)
                                 button.btn Delete
+            include ../includes/pagination
         else
             h1 No products
