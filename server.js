@@ -10,9 +10,18 @@ const errorController = require('./controllers/error')
 const User = require('./models/user')
 const flash = require('connect-flash')
 const multer = require('multer')
+const fs = require('fs')
+const https = require('https')
 
 const csrf = require('csurf')
 const csrfProtection = csrf()
+
+const privateKey = fs.readFileSync('server.key')
+const certificate = fs.readFileSync('server.cert')
+
+const helmet = require('helmet')
+const compression = require('compression')
+const morgan = require('morgan')
 
 const fileStorage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -40,6 +49,16 @@ const fileFilter = (req, file, callback) => {
 const app = express()
 
 require('dotenv').config();
+
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {
+    flags: 'a'
+})
+
+app.use(helmet())
+app.use(compression())
+app.use(morgan('combined', {
+    stream: accessLogStream
+}))
 
 const store = new MongoDBStore({
     uri: process.env.MONGO_CONNECTION_URI,
@@ -107,7 +126,11 @@ mongoose.set('strictQuery', false)
 mongoose.connect(process.env.MONGO_CONNECTION_URI)
     .then(r => {
         console.log('Connected successfully to MongoDB server');
-        app.listen(8101)
+        https.createServer({
+            key: privateKey,
+            cert: certificate
+        }, app)
+            .listen(process.env.PORT || 8101)
     })
     .catch(e => {
         console.error(e)
